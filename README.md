@@ -50,7 +50,7 @@ To get a local copy up and running, simply follow these steps:
 
 1.  **Clone the repository:**
     ```sh
-    git clone [https://github.com/your-username/joonify-landing-page.git](https://github.com/your-username/joonify-landing-page.git)
+    git clone https://github.com/larsjoon/joonify-landing-page.git
     ```
 
 2.  **Navigate to the project directory:**
