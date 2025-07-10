@@ -1,0 +1,202 @@
+/* --- General & Body Setup --- */
+body {
+    background-color: #0a191f;
+    color: #e5e7eb; /* text-gray-200 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    min-height: 100vh;
+}
+
+#app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* --- Particle Canvas --- */
+#particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+/* --- Main Content Layout --- */
+.main-content {
+    container: mx-auto;
+    padding: 3rem 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.content-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1280px; /* Standard container width */
+    margin: 0 auto;
+}
+
+/* --- Golden Ratio Panels --- */
+.left-panel, .right-panel {
+    width: 100%;
+}
+
+.header-text {
+    text-align: center;
+}
+
+h1 {
+    font-size: 3.75rem; /* 5xl */
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+}
+
+.subtitle {
+    margin-top: 1rem;
+    font-size: 1.25rem; /* xl */
+    color: #86efac; /* text-green-300 */
+}
+
+.right-panel {
+    margin-top: 3rem;
+}
+
+.philosophy-box {
+    background-color: rgba(6, 78, 59, 0.2); /* bg-green-900 bg-opacity-20 */
+    backdrop-filter: blur(4px); /* backdrop-blur-sm */
+    padding: 2rem;
+    border-radius: 0.5rem; /* rounded-lg */
+    border: 1px solid rgba(52, 211, 153, 0.2); /* border-green-500 border-opacity-20 */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+}
+
+h2 {
+    font-size: 1.5rem; /* 2xl */
+    font-weight: 600;
+    color: #bbf7d0; /* text-green-200 */
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+.philosophy-box p {
+    color: #d1d5db; /* text-gray-300 */
+    line-height: 1.625;
+}
+
+.highlight {
+    font-weight: 600;
+    color: #86efac; /* text-green-300 */
+}
+
+/* --- Footer --- */
+.page-footer {
+    width: 100%;
+    padding: 1.5rem;
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem; /* space-x-6 */
+}
+
+.social-links a {
+    color: #9ca3af; /* text-gray-400 */
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #86efac; /* hover:text-green-300 */
+}
+
+.contact-info {
+    margin-top: 1.5rem;
+    color: #9ca3af; /* text-gray-400 */
+    font-size: 0.875rem; /* text-sm */
+}
+.contact-info p { margin: 0.5rem 0; }
+
+.contact-info a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: #86efac; /* hover:text-green-300 */
+}
+
+.copyright {
+    text-align: center;
+    color: #6b7280; /* text-gray-500 */
+    font-size: 0.75rem; /* text-xs */
+    margin-top: 1rem;
+}
+
+
+/* --- Animation --- */
+.animated-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.animated-item.is-mounted {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* --- Responsive Design (Large Screens) --- */
+@media (min-width: 1024px) {
+    .content-wrapper {
+        flex-direction: row;
+    }
+    
+    .left-panel {
+        width: 61.8%;
+    }
+
+    .right-panel {
+        width: 38.2%;
+        margin-top: 0;
+    }
+
+    .header-text {
+        text-align: left;
+    }
+
+    h1 {
+        font-size: 4.5rem; /* md:text-7xl */
+    }
+
+    .subtitle {
+        font-size: 1.5rem; /* md:text-2xl */
+    }
+}
