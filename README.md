@@ -35,7 +35,9 @@ The project is organized into three main files, promoting a clear separation of 
 
 .
 ├── 📄 index.html      # The main HTML file with the page structure.
+
 ├── 🎨 style.css       # All CSS rules for styling and responsiveness.
+
 └── ⚙️ script.js       # JavaScript for the canvas animation and interactions.
 
 
