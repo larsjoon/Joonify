@@ -3,27 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joonify - The Soul of Intelligent Software</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="./script.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     
+    <title>Joonify - The Soul of Intelligent Software</title>
+    <meta name="description" content="Joonify builds human-centered, innovative, and performant AI solutions, web applications, and offers expert IT consulting.">
+    <meta name="keywords" content="AI development, machine learning, web applications, IT consulting, intelligent software, Joonify">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.joonify.dev/">
+    <meta property="og:title" content="Joonify - The Soul of Intelligent Software">
+    <meta property="og:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.joonify.dev/">
+    <meta property="twitter:title" content="Joonify - The Soul of Intelligent Software">
+    <meta property="twitter:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://unpkg.com/lucide@0.407.0/dist/lucide.min.js" integrity="sha384-Nlqp1F6kSqXf/nEM21Jcxg5e3v0V2P7Bq2sC9xGDLzVv0Zkpr0q0ZJdKz2u+OK3z" crossorigin="anonymous"></script>
+    
+    <script src="script.js" defer></script>
 </head>
 <body>
-
     <div id="app-container">
         <canvas id="particle-canvas"></canvas>
 
-        <main class="main-content">
-            <div class="content-wrapper">
-                
+        <section class="hero-section">
+            <div class="hero-content">
                 <div class="left-panel animated-item">
                     <div class="header-text">
                         <h1>Joonify</h1>
                         <p class="subtitle">The Soul of Intelligent Software.</p>
                     </div>
                 </div>
-
                 <div class="right-panel animated-item" style="transition-delay: 300ms;">
                     <div class="philosophy-box">
                         <h2>Our Philosophy</h2>
@@ -32,22 +42,79 @@
                         </p>
                     </div>
                 </div>
-
             </div>
-        </main>
+            <div class="scroll-indicator">
+                <i data-lucide="chevron-down" size="24"></i>
+            </div>
+        </section>
 
-        <footer class="page-footer animated-item" style="transition-delay: 500ms;">
+        <section class="stats-section">
+            <div class="stats-container">
+                <div class="stats-header animated-item">
+                    <h2 class="stats-title">Growing Together</h2>
+                    <p class="stats-subtitle">Real-time insights into our community and impact</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card animated-item" style="transition-delay: 100ms;">
+                        <div class="stat-icon"><i data-lucide="users" size="32"></i></div>
+                        <div class="stat-number" id="visitors-count">2,847</div>
+                        <div class="stat-label">Monthly Visitors</div>
+                        <p class="stat-description">Growing community of developers and innovators</p>
+                    </div>
+                    <div class="stat-card animated-item" style="transition-delay: 200ms;">
+                        <div class="stat-icon"><i data-lucide="code" size="32"></i></div>
+                        <div class="stat-number" id="projects-count">34</div>
+                        <div class="stat-label">Active Projects</div>
+                        <p class="stat-description">AI solutions currently in development</p>
+                    </div>
+                    <div class="stat-card animated-item" style="transition-delay: 300ms;">
+                        <div class="stat-icon"><i data-lucide="zap" size="32"></i></div>
+                        <div class="stat-number" id="performance-score">99.2</div>
+                        <div class="stat-label">Performance Score</div>
+                        <p class="stat-description">Average application performance rating</p>
+                    </div>
+                    <div class="stat-card animated-item" style="transition-delay: 400ms;">
+                        <div class="stat-icon"><i data-lucide="globe" size="32"></i></div>
+                        <div class="stat-number" id="countries-count">23</div>
+                        <div class="stat-label">Countries Served</div>
+                        <p class="stat-description">Global reach of our solutions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <div class="services-container">
+                <div class="services-header animated-item">
+                    <h2 class="stats-title">Our Services</h2>
+                    <p class="stats-subtitle">Comprehensive AI and software solutions</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card animated-item" style="transition-delay: 100ms;">
+                        <div class="service-icon"><i data-lucide="brain" size="32"></i></div>
+                        <h3 class="service-title">AI Development</h3>
+                        <p class="service-description">Custom AI solutions tailored to your business needs, from machine learning models to intelligent automation systems.</p>
+                    </div>
+                    <div class="service-card animated-item" style="transition-delay: 200ms;">
+                        <div class="service-icon"><i data-lucide="monitor" size="32"></i></div>
+                        <h3 class="service-title">Web Applications</h3>
+                        <p class="service-description">Modern, responsive web applications built with cutting-edge technologies and optimized for performance.</p>
+                    </div>
+                    <div class="service-card animated-item" style="transition-delay: 300ms;">
+                        <div class="service-icon"><i data-lucide="settings" size="32"></i></div>
+                        <h3 class="service-title">IT Consulting</h3>
+                        <p class="service-description">Expert guidance on technology strategy, system architecture, and digital transformation initiatives.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="page-footer animated-item">
             <div class="footer-container">
                 <div class="social-links">
-                    <a href="mailto:lars@joonify.dev">
-                        <i data-lucide="mail"></i>
-                    </a>
-                    <a href="https://linkedin.com/company/J00nify">
-                        <i data-lucide="linkedin"></i>
-                    </a>
-                    <a href="https://gitlab.com/larsv0/Joonify.git">
-                        <i data-lucide="gitlab"></i>
-                    </a>
+                    <a href="mailto:lars@joonify.dev" aria-label="Email Joonify"><i data-lucide="mail"></i></a>
+                    <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn"><i data-lucide="linkedin"></i></a>
+                    <a href="https://gitlab.com/larsv0/Joonify.git" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitLab"><i data-lucide="gitlab"></i></a>
                 </div>
                 <div class="contact-info">
                     <p><a href="mailto:lars@joonify.dev">lars@joonify.dev</a></p>
@@ -57,7 +124,5 @@
             </div>
         </footer>
     </div>
-
-    
 </body>
 </html>
