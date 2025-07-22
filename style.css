@@ -358,3 +358,19 @@ h2 {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+html {
+    scroll-behavior: smooth; 
+    overscroll-behavior-y: contain; 
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+
+  .cta-button,
+  .cta-button::before {
+    transition: none;
+  }
+}
+}
