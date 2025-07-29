@@ -18,7 +18,7 @@
     <meta property="twitter:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
     <link rel="stylesheet" href="./style.css">
 
-    <script src="https://unpkg.com/lucide@0.407.0/dist/lucide.min.js" integrity="sha384-Nlqp1F6kSqXf/nEM21Jcxg5e3v0V2P7Bq2sC9xGDLzVv0Zkpr0q0ZJdKz2u+OK3z" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/lucide@0.407.0/dist/lucide.min.js" xintegrity="sha384-Nlqp1F6kSqXf/nEM21Jcxg5e3v0V2P7Bq2sC9xGDLzVv0Zkpr0q0ZJdKz2u+OK3z" crossorigin="anonymous"></script>
     
     <script src="script.js" defer></script>
 </head>
@@ -26,21 +26,26 @@
     <div id="app-container">
         <canvas id="particle-canvas"></canvas>
 
+        <!-- Section 1: Brand Reveal & Philosophy -->
         <section class="hero-section">
             <div class="hero-content">
-                <div class="left-panel animated-item">
+                <div class="main-header">
                     <div class="header-text">
-                        <h1>Joonify</h1>
-                        <p class="subtitle">The Soul of Intelligent Software.</p>
+                        <!-- Container for the scroll-reveal animation -->
+                        <h1 id="joonify-title-container"><span id="joonify-title">Joonify</span></h1>
+                        <p class="subtitle animated-item" style="transition-delay: 200ms;">The Soul of Intelligent Software.</p>
                     </div>
                 </div>
-                <div class="right-panel animated-item" style="transition-delay: 300ms;">
+                <div class="philosophy-section animated-item" style="transition-delay: 300ms;">
                     <div class="philosophy-box">
                         <h2>Our Philosophy</h2>
                         <p>
-                            The name <span class="highlight">Joon</span>, from the Farsi word for 'soul' or 'life', is the core of our identity. We believe technology should be an extension of human potential, not a replacement. At Joonify, we build AI solutions that are innovative, simple, and performant—always with a human-centered essence.
+                            The name <span class="highlight">Joon</span>, from the Farsi word for 'soul' or 'life', is the core of our identity. We believe technology should be an extension of human potential. At Joonify, we build AI solutions that are innovative, simple, and performant—always with a human-centered essence.
                         </p>
                     </div>
+                </div>
+                <div class="cta-section">
+                    <a href="#services" class="cta-button animated-item" style="transition-delay: 400ms;">Explore Our Solutions</a>
                 </div>
             </div>
             <div class="scroll-indicator">
@@ -48,6 +53,34 @@
             </div>
         </section>
 
+        <!-- Section 2: Services -->
+        <section id="services" class="services-section">
+            <div class="services-container">
+                <div class="services-header animated-item">
+                    <h2 class="stats-title">Our Services</h2>
+                    <p class="stats-subtitle">Comprehensive AI and software solutions</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card animated-item" style="transition-delay: 100ms;">
+                        <div class="service-icon"><i data-lucide="brain" size="32"></i></div>
+                        <h3 class="service-title">AI Development</h3>
+                        <p class="service-description">Custom AI solutions tailored to your business needs, from machine learning models to intelligent automation systems.</p>
+                    </div>
+                    <div class="service-card animated-item" style="transition-delay: 200ms;">
+                        <div class="service-icon"><i data-lucide="monitor" size="32"></i></div>
+                        <h3 class="service-title">Web Applications</h3>
+                        <p class="service-description">Modern, responsive web applications built with cutting-edge technologies and optimized for performance.</p>
+                    </div>
+                    <div class="service-card animated-item" style="transition-delay: 300ms;">
+                        <div class="service-icon"><i data-lucide="settings" size="32"></i></div>
+                        <h3 class="service-title">IT Consulting</h3>
+                        <p class="service-description">Expert guidance on technology strategy, system architecture, and digital transformation initiatives.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Stats (Social Proof) -->
         <section class="stats-section">
             <div class="stats-container">
                 <div class="stats-header animated-item">
@@ -78,32 +111,6 @@
                         <div class="stat-number" id="countries-count">23</div>
                         <div class="stat-label">Countries Served</div>
                         <p class="stat-description">Global reach of our solutions</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="services-section">
-            <div class="services-container">
-                <div class="services-header animated-item">
-                    <h2 class="stats-title">Our Services</h2>
-                    <p class="stats-subtitle">Comprehensive AI and software solutions</p>
-                </div>
-                <div class="services-grid">
-                    <div class="service-card animated-item" style="transition-delay: 100ms;">
-                        <div class="service-icon"><i data-lucide="brain" size="32"></i></div>
-                        <h3 class="service-title">AI Development</h3>
-                        <p class="service-description">Custom AI solutions tailored to your business needs, from machine learning models to intelligent automation systems.</p>
-                    </div>
-                    <div class="service-card animated-item" style="transition-delay: 200ms;">
-                        <div class="service-icon"><i data-lucide="monitor" size="32"></i></div>
-                        <h3 class="service-title">Web Applications</h3>
-                        <p class="service-description">Modern, responsive web applications built with cutting-edge technologies and optimized for performance.</p>
-                    </div>
-                    <div class="service-card animated-item" style="transition-delay: 300ms;">
-                        <div class="service-icon"><i data-lucide="settings" size="32"></i></div>
-                        <h3 class="service-title">IT Consulting</h3>
-                        <p class="service-description">Expert guidance on technology strategy, system architecture, and digital transformation initiatives.</p>
                     </div>
                 </div>
             </div>
