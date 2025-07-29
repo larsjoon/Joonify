@@ -21,6 +21,19 @@
     box-sizing: border-box;
 }
 
+/* Reset any potential conflicting styles */
+.hero-content,
+.main-header,
+.philosophy-section,
+.cta-section {
+    float: none !important;
+    position: static !important;
+}
+
+.hero-content {
+    display: flex !important;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -68,7 +81,7 @@ html {
 .hero-content {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: column !important;
     align-items: center;
     justify-content: center;
     max-width: 1000px;
@@ -81,21 +94,30 @@ html {
     text-align: center;
     width: 100%;
     margin-bottom: 1rem;
+    display: block;
+    flex-shrink: 0;
 }
 
 .header-text {
     text-align: center;
     /* This is the container for the 3D effect */
     perspective: 800px;
+    width: 100%;
 }
 
 .philosophy-section {
     width: 100%;
     max-width: 700px;
+    display: block;
+    flex-shrink: 0;
 }
 
 .cta-section {
     margin-top: 1rem;
+    text-align: center;
+    width: 100%;
+    display: block;
+    flex-shrink: 0;
 }
 
 .cta-button {
@@ -416,6 +438,40 @@ h2 {
     }
 }
 
+/* --- Force Vertical Layout (Production Fix) --- */
+.hero-content > * {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.hero-content .main-header,
+.hero-content .philosophy-section,
+.hero-content .cta-section {
+    display: block !important;
+    width: 100% !important;
+    flex-basis: auto !important;
+}
+
+/* Ensure no horizontal layout on any screen size */
+@media (min-width: 1px) {
+    .hero-content {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .main-header {
+        order: 1;
+    }
+    
+    .philosophy-section {
+        order: 2;
+    }
+    
+    .cta-section {
+        order: 3;
+    }
+}
+
 /* --- Responsive Design --- */
 
 /* Mobile-first optimizations */
@@ -580,6 +636,18 @@ h2 {
         padding: 4rem 2rem;
     }
     
+    .hero-content {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .main-header,
+    .philosophy-section,
+    .cta-section {
+        width: 100% !important;
+        display: block !important;
+    }
+    
     .stats-section, .services-section {
         padding: 6rem 2rem;
     }
@@ -596,6 +664,18 @@ h2 {
 }
 
 @media (min-width: 1024px) {
+    .hero-content {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .main-header,
+    .philosophy-section,
+    .cta-section {
+        width: 100% !important;
+        display: block !important;
+    }
+    
     #joonify-title-container {
         font-size: 4.5rem;
     }
