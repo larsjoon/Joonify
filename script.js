@@ -12,18 +12,36 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} theme - The theme to apply ('light' or 'dark').
      */
     const applyTheme = (theme) => {
+        console.log(`Applying theme: ${theme}`);
+        
         if (theme === 'light') {
             docElement.setAttribute('data-theme', 'light');
-            if (sunIcon) sunIcon.style.display = 'none';
-            if (moonIcon) moonIcon.style.display = 'inline-block';
+            if (sunIcon) {
+                sunIcon.style.display = 'none';
+                console.log('Sun icon hidden');
+            }
+            if (moonIcon) {
+                moonIcon.style.display = 'inline-block';
+                console.log('Moon icon shown');
+            }
         } else {
             docElement.removeAttribute('data-theme');
-            if (sunIcon) sunIcon.style.display = 'inline-block';
-            if (moonIcon) moonIcon.style.display = 'none';
+            if (sunIcon) {
+                sunIcon.style.display = 'inline-block';
+                console.log('Sun icon shown');
+            }
+            if (moonIcon) {
+                moonIcon.style.display = 'none';
+                console.log('Moon icon hidden');
+            }
         }
+        
         // Ensure the correct icon is rendered by Lucide after its display property changes
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+            console.log('Lucide icons refreshed');
+        } else {
+            console.warn('Lucide not available for theme toggle icons');
         }
     };
 
@@ -35,13 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add event listener for the toggle button
     if (themeToggleButton) {
+        console.log('Theme toggle button found, adding event listener');
         themeToggleButton.addEventListener('click', () => {
             const currentTheme = docElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             
+            console.log(`Switching theme from ${currentTheme || 'dark'} to ${newTheme}`);
             localStorage.setItem('theme', newTheme);
             applyTheme(newTheme);
         });
+    } else {
+        console.error('Theme toggle button not found!');
     }
 
 
