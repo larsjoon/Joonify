@@ -16,14 +16,20 @@
     <meta property="twitter:url" content="https://www.joonify.dev/">
     <meta property="twitter:title" content="Joonify - The Soul of Intelligent Software">
     <meta property="twitter:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
-    <link rel="stylesheet" href="./style.css">
 
-    <script src="https://unpkg.com/lucide@0.407.0/dist/lucide.min.js" xintegrity="sha384-Nlqp1F6kSqXf/nEM21Jcxg5e3v0V2P7Bq2sC9xGDLzVv0Zkpr0q0ZJdKz2u+OK3z" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" crossorigin="anonymous"></script>
     
     <script src="script.js" defer></script>
 </head>
 <body>
     <div id="app-container">
+        <!-- THEME TOGGLE BUTTON -->
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light and dark mode">
+            <i data-lucide="sun" class="theme-icon-sun"></i>
+            <i data-lucide="moon" class="theme-icon-moon" style="display: none;"></i>
+        </button>
+
         <canvas id="particle-canvas"></canvas>
 
         <!-- Section 1: Brand Reveal & Philosophy -->
@@ -116,12 +122,22 @@
             </div>
         </section>
 
-        <footer class="page-footer animated-item">
+        <footer class="page-footer">
             <div class="footer-container">
                 <div class="social-links">
-                    <a href="mailto:lars@joonify.dev" aria-label="Email Joonify"><i data-lucide="mail"></i></a>
-                    <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn"><i data-lucide="linkedin"></i></a>
-                    <a href="https://gitlab.com/larsv0/Joonify.git" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitLab"><i data-lucide="gitlab"></i></a>
+                    <a href="mailto:lars@joonify.dev" aria-label="Email Joonify" class="social-link-email">
+                        <i data-lucide="mail">📧</i>
+                    </a>
+                    <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn" class="social-link-linkedin">
+                        <i data-lucide="linkedin">💼</i>
+                    </a>
+                    <a href="https://github.com/larsjoon/Joonify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitHub" class="social-link-github">
+                        <i data-lucide="github">🐙</i>
+                    </a>
+                    <a href="https://twitter.com/joonify_nl" target="_blank" rel="noopener noreferrer" aria-label="Joonify on Twitter" class="social-link-twitter">
+                        <i data-lucide="twitter">🐦</i>
+                    </a>
+
                 </div>
                 <div class="contact-info">
                     <p><a href="mailto:lars@joonify.dev">lars@joonify.dev</a></p>

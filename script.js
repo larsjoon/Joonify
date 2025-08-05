@@ -1,6 +1,51 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Particle Animation (Unchanged) ---
+    // --- THEME TOGGLE ---
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const sunIcon = document.querySelector('.theme-icon-sun');
+    const moonIcon = document.querySelector('.theme-icon-moon');
+    const docElement = document.documentElement;
+
+    /**
+     * Applies the specified theme (light or dark) to the document
+     * and updates the toggle button icon.
+     * @param {string} theme - The theme to apply ('light' or 'dark').
+     */
+    const applyTheme = (theme) => {
+        if (theme === 'light') {
+            docElement.setAttribute('data-theme', 'light');
+            if (sunIcon) sunIcon.style.display = 'none';
+            if (moonIcon) moonIcon.style.display = 'inline-block';
+        } else {
+            docElement.removeAttribute('data-theme');
+            if (sunIcon) sunIcon.style.display = 'inline-block';
+            if (moonIcon) moonIcon.style.display = 'none';
+        }
+        // Ensure the correct icon is rendered by Lucide after its display property changes
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    };
+
+    // Check for a saved theme in localStorage on page load
+    // If no theme is saved, it defaults to the user's OS preference, otherwise 'dark'.
+    const osPreference = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    const savedTheme = localStorage.getItem('theme') || osPreference;
+    applyTheme(savedTheme);
+
+    // Add event listener for the toggle button
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', () => {
+            const currentTheme = docElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+    }
+
+
+    // --- Particle Animation ---
     const canvas = document.getElementById('particle-canvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -18,7 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.size = Math.random() * 2 + 0.5;
                 this.speedX = Math.random() * 0.5 - 0.25;
                 this.speedY = Math.random() * 0.5 - 0.25;
-                this.color = `rgba(173, 216, 230, ${Math.random() * 0.5 + 0.2})`;
+                // Dynamically get color from CSS variable
+                this.color = getComputedStyle(document.documentElement).getPropertyValue('--particle-color').trim() || 'rgba(173, 216, 230, 0.7)';
             }
             update() {
                 this.x += this.speedX;
@@ -45,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const connectParticles = () => {
+            const particleColor = getComputedStyle(document.documentElement).getPropertyValue('--particle-color').trim() || 'rgba(173, 216, 230, 0.7)';
             for (let a = 0; a < particles.length; a++) {
                 for (let b = a; b < particles.length; b++) {
                     const distance = Math.sqrt(
@@ -53,7 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                     if (distance < 100) {
                         const opacityValue = 1 - distance / 100;
-                        ctx.strokeStyle = `rgba(173, 216, 230, ${opacityValue * 0.5})`;
+                        // Create a color string with the dynamic opacity
+                        const lineColor = particleColor.replace(/[\d\.]+\)$/g, `${opacityValue * 0.5})`);
+                        ctx.strokeStyle = lineColor;
                         ctx.lineWidth = 0.5;
                         ctx.beginPath();
                         ctx.moveTo(particles[a].x, particles[a].y);
@@ -81,50 +130,41 @@ document.addEventListener('DOMContentLoaded', () => {
             resizeCanvas();
             initParticles();
         });
+
+        // Re-initialize particles on theme change to update colors
+        if (themeToggleButton) {
+            themeToggleButton.addEventListener('click', initParticles);
+        }
     }
 
-    // --- NEW: Joonify Title Scroll Animation ---
+    // --- Joonify Title Scroll Animation ---
     const joonifyTitle = document.getElementById('joonify-title');
     const heroSection = document.querySelector('.hero-section');
 
     if (joonifyTitle && heroSection) {
         const handleScrollAnimation = () => {
-            // Get the position of the hero section relative to the viewport
             const rect = heroSection.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
-
-            // Calculate when the animation should start and end.
-            // Starts when the top of the hero section is at the bottom of the viewport.
-            // Ends when the top of the hero section reaches the middle of the viewport.
             const animationStart = viewportHeight;
             const animationEnd = viewportHeight / 2;
-
-            // Calculate the progress of the animation (from 0 to 1)
             const progress = 1 - ((rect.top - animationEnd) / (animationStart - animationEnd));
-            
-            // Clamp the progress value between 0 and 1
             const clampedProgress = Math.max(0, Math.min(1, progress));
-
-            // Interpolate CSS properties based on scroll progress
             const opacity = clampedProgress;
-            const scale = 0.9 + (clampedProgress * 0.1); // Animate from 0.9 to 1
-            const rotationX = 45 - (clampedProgress * 45); // Animate from 45deg to 0deg
+            const scale = 0.9 + (clampedProgress * 0.1);
+            const rotationX = 45 - (clampedProgress * 45);
 
-            // Apply the transform using requestAnimationFrame for performance
             requestAnimationFrame(() => {
                 joonifyTitle.style.opacity = opacity;
                 joonifyTitle.style.transform = `scale(${scale}) rotateX(${rotationX}deg)`;
             });
         };
         
-        // Run the animation on scroll
         window.addEventListener('scroll', handleScrollAnimation, { passive: true });
-        // Also run it on load in case the page is reloaded halfway down
         handleScrollAnimation();
     }
 
 
-    // --- Scroll-based Fade-in Animations (Unchanged) ---
+    // --- Scroll-based Fade-in Animations ---
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -143,10 +183,23 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedItemObserver.observe(item);
     });
 
-    // --- Real-time Stats Connection via WebSockets (Unchanged) ---
+    // --- Real-time Stats Connection via WebSockets ---
     function connectToStats() {
+        // Only connect if on the expected domain for security
+        if (!window.location.hostname.includes('joonify.dev') && window.location.hostname !== 'localhost') {
+            console.log("Stats connection disabled on this domain for security.");
+            return;
+        }
+
         const wsUrl = "wss://joonify-stats-worker.larsvlasveld11.workers.dev";
-        const socket = new WebSocket(wsUrl);
+        let socket;
+        
+        try {
+            socket = new WebSocket(wsUrl);
+        } catch (error) {
+            console.error("Failed to create WebSocket connection:", error);
+            return;
+        }
 
         socket.onopen = () => {
             console.log("Connected to Joonify real-time stats server.");
@@ -155,7 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.onmessage = (event) => {
             try {
                 const stats = JSON.parse(event.data);
-                updateStatOnPage(stats);
+                // Validate that stats is an object with expected properties
+                if (typeof stats === 'object' && stats !== null) {
+                    updateStatOnPage(stats);
+                }
             } catch (error) {
                 console.error("Error parsing stats data:", error);
             }
@@ -168,14 +224,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         socket.onerror = (error) => {
             console.error("WebSocket Error:", error);
-            socket.close();
+            if (socket) {
+                socket.close();
+            }
         };
     }
 
     function updateStatOnPage(stats) {
+        // Whitelist of allowed stat keys for security
+        const allowedKeys = ['visitors-count', 'projects-count', 'performance-score', 'countries-count'];
+        
         for (const key in stats) {
+            if (!allowedKeys.includes(key)) {
+                continue; // Skip unauthorized keys
+            }
+            
             const element = document.getElementById(key);
-            if (element) {
+            if (element && typeof stats[key] === 'number') {
                 element.style.transition = 'none';
                 element.style.opacity = '0.5';
                 
@@ -191,8 +256,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the connection when the page loads
     connectToStats();
 
-    // --- Lucide Icon Rendering (Unchanged) ---
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
+    // --- Lucide Icon Rendering ---
+    const initializeLucideIcons = () => {
+        if (typeof lucide !== 'undefined') {
+            try {
+                lucide.createIcons();
+                console.log('Lucide icons initialized successfully');
+                
+                // Double-check social media icons after a delay
+                setTimeout(() => {
+                    const socialLinks = document.querySelectorAll('.social-links a i[data-lucide]');
+                    let iconsRendered = 0;
+                    
+                    socialLinks.forEach(icon => {
+                        if (icon.innerHTML && icon.innerHTML.length > 2) {
+                            iconsRendered++;
+                        }
+                    });
+                    
+                    console.log(`${iconsRendered}/${socialLinks.length} social media icons rendered`);
+                    
+                    if (iconsRendered === 0) {
+                        console.warn('No social media icons rendered - using fallback text');
+                    }
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error initializing Lucide icons:', error);
+            }
+        } else {
+            console.error('Lucide library not loaded - social media icons will show fallback text');
+        }
+    };
+
+    // Try to initialize icons immediately
+    initializeLucideIcons();
+    
+    // Also try after a delay in case the library loads late
+    setTimeout(initializeLucideIcons, 1000);
 });
