@@ -1,66 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // --- 1. Fix Invisible Title & Animations ---
-    // We run this immediately so your title appears, regardless of other errors.
-    initScrollAnimations();
 
-    // --- 2. Fix Icons ---
-    // Try to render immediately, but also set a backup timer in case the library loads late.
-    if (window.lucide) {
-        window.lucide.createIcons();
-    } else {
-        // Backup: Try again every 100ms for 1 second
-        const iconCheck = setInterval(() => {
-            if (window.lucide) {
-                window.lucide.createIcons();
-                clearInterval(iconCheck);
-            }
-        }, 100);
-        // Stop checking after 2 seconds
-        setTimeout(() => clearInterval(iconCheck), 2000);
-    }
-
-    // --- 3. Setup Logic ---
+    // --- 1. Identify which page we are on ---
     const isMapPage = document.body.classList.contains('map-page');
     const particleCanvas = document.getElementById('particle-canvas');
 
-    // --- 4. Homepage Logic (Particles) ---
+    // --- 2. Run Homepage Logic (Particles & Scroll Animations) ---
     if (!isMapPage && particleCanvas) {
-        try {
-            initParticles(particleCanvas);
-        } catch (e) { console.error("Particle error:", e); }
+        initParticles(particleCanvas);
+        initScrollAnimations();
     }
 
-    // --- 5. Map Page Logic (Globe) ---
+    // --- 3. Run Map Page Logic (Globe) ---
     if (isMapPage) {
-        try {
-            initGlobe();
-        } catch (e) { console.error("Globe error:", e); }
+        initGlobe();
     }
 
-    // --- 6. Connect to Stats ---
+    // --- 4. Shared Logic (WebSocket & Icons) ---
     connectToStats(isMapPage);
+    
+    // Initialize Lucide icons with retry logic
+    const initIcons = () => {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            // Retry after a short delay if lucide isn't loaded yet
+            setTimeout(initIcons, 100);
+        }
+    };
+    initIcons();
 });
-
-
-// --- Helper: Scroll Animations ---
-function initScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-mounted');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.animated-item').forEach(item => observer.observe(item));
-}
 
 
 // --- Helper: Particle Animation ---
 function initParticles(canvas) {
-    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let particles = [];
     
@@ -119,6 +91,21 @@ function initParticles(canvas) {
     window.addEventListener('resize', () => { resizeCanvas(); init(); });
 }
 
+// --- Helper: Scroll Animations ---
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-mounted');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animated-item').forEach(item => observer.observe(item));
+    
+    // Note: Joonify title scroll animation removed since hero is now at top
+}
 
 // --- Helper: 3D Globe Logic ---
 let world; 
@@ -126,15 +113,9 @@ function initGlobe() {
     const elem = document.getElementById('globe-viz');
     if(!elem) return;
 
-    if (typeof Globe === 'undefined') {
-        // Retry once if library loaded late
-        setTimeout(initGlobe, 500);
-        return;
-    }
-
     world = Globe()
         (elem)
-        .backgroundColor('#000000') 
+        .backgroundColor('#000000') // Pure black background
         .width(window.innerWidth)
         .height(window.innerHeight)
         .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
@@ -152,6 +133,7 @@ function initGlobe() {
 function updateGlobeData(countryData) {
     if (!world || !countryData) return;
 
+    // Mapping for major countries - You can expand this list
     const countryCoords = {
         "US": { lat: 37.09, lng: -95.71, name: "USA" },
         "NL": { lat: 52.13, lng: 5.29, name: "Netherlands" },
@@ -164,7 +146,7 @@ function updateGlobeData(countryData) {
         "BR": { lat: -14.23, lng: -51.92, name: "Brazil" },
         "AU": { lat: -25.27, lng: 133.77, name: "Australia" },
         "CA": { lat: 56.13, lng: -106.34, name: "Canada" },
-        "RU": { lat: 61.52, lng: 105.31, name: "Russia" },
+        "RU": { lat: 61.52, lng: 105.31, name: "Russia" }
     };
 
     const points = [];
@@ -184,36 +166,43 @@ function updateGlobeData(countryData) {
     world.pointsData(points);
 }
 
-
-// --- WebSocket Logic ---
+// --- WebSocket Logic (Shared) ---
 function connectToStats(isMapPage) {
+    // REPLACE WITH YOUR WORKER URL
     const wsUrl = "wss://joonify-stats-worker.larsvlasveld11.workers.dev";
     
+    // Simple reconnect logic
     const connect = () => {
-        try {
-            const socket = new WebSocket(wsUrl);
-            socket.onopen = () => console.log("Connected to stats.");
-            
-            socket.onmessage = (event) => {
-                try {
-                    const stats = JSON.parse(event.data);
-                    
-                    if (!isMapPage) updateStatOnPage(stats);
-                    
-                    if (isMapPage) {
-                        if (stats['map-data']) updateGlobeData(stats['map-data']);
-                        if (stats['visitors-count']) {
-                            const countEl = document.getElementById('map-visitor-count');
-                            if(countEl) countEl.textContent = `${Math.floor(stats['visitors-count']).toLocaleString()} Visitors`;
-                        }
-                    }
-                } catch (error) { console.error("Data error:", error); }
-            };
+        const socket = new WebSocket(wsUrl);
 
-            socket.onclose = () => setTimeout(connect, 5000);
-            socket.onerror = (e) => socket.close();
-        } catch (e) { console.error("WS error:", e); }
+        socket.onopen = () => console.log("Connected to Joonify stats.");
+        
+        socket.onmessage = (event) => {
+            try {
+                const stats = JSON.parse(event.data);
+                
+                // 1. Update Homepage Stats
+                if (!isMapPage) {
+                    updateStatOnPage(stats);
+                }
+                
+                // 2. Update Map Page Stats
+                if (isMapPage) {
+                    if (stats['map-data']) updateGlobeData(stats['map-data']);
+                    if (stats['visitors-count']) {
+                        const countEl = document.getElementById('map-visitor-count');
+                        if(countEl) countEl.textContent = `${stats['visitors-count'].toLocaleString()} Visitors`;
+                    }
+                }
+            } catch (error) {
+                console.error("Data error:", error);
+            }
+        };
+
+        socket.onclose = () => setTimeout(connect, 5000);
+        socket.onerror = (e) => socket.close();
     };
+
     connect();
 }
 
@@ -221,7 +210,7 @@ function updateStatOnPage(stats) {
     for (const key in stats) {
         const element = document.getElementById(key);
         if (element) {
-            element.textContent = Math.floor(stats[key]).toLocaleString();
+            element.textContent = stats[key].toLocaleString();
         }
     }
 }

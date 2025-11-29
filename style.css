@@ -176,14 +176,13 @@ html {
 }
 
 #joonify-title {
-    display: inline-block; /* Needed for transform */
-    /* Initial state is set by JS, but this ensures smooth transition */
-    transition: transform 0.1s linear, opacity 0.1s linear;
+    display: inline-block;
+    /* Make title visible immediately since it's at the top */
+    opacity: 1;
+    transform: scale(1) rotateX(0deg);
+    transition: transform 0.3s ease, opacity 0.3s ease;
     will-change: transform, opacity;
     transform-style: preserve-3d;
-    /* Set initial state to be invisible until scrolled */
-    opacity: 0;
-    transform: scale(0.9) rotateX(45deg);
 }
 
 .subtitle {
@@ -315,6 +314,35 @@ h2 {
 .stat-icon, .service-icon {
     margin-bottom: 1rem;
     color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg, .service-icon svg {
+    width: 32px;
+    height: 32px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Ensure icons in social links are visible */
+.social-links a svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Ensure scroll indicator icon is visible */
+.scroll-indicator svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
 }
 
 /* --- Services Section --- */
