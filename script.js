@@ -1,28 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("Joonify script loaded.");
 
-    // --- 1. Identify which page we are on ---
+    // --- 1. Load Icons Immediately (Priority) ---
+    // We wrap this in a try-catch so it never breaks the rest of the site
+    try {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+            console.log("Icons rendered.");
+        } else {
+            console.error("Lucide library not found!");
+        }
+    } catch (e) { console.error("Icon error:", e); }
+
+    // --- 2. Identify Page ---
     const isMapPage = document.body.classList.contains('map-page');
     const particleCanvas = document.getElementById('particle-canvas');
 
-    // --- 2. Run Homepage Logic (Particles & Scroll Animations) ---
+    // --- 3. Homepage Logic ---
     if (!isMapPage && particleCanvas) {
-        initParticles(particleCanvas);
-        initScrollAnimations();
+        try {
+            initParticles(particleCanvas);
+            initScrollAnimations();
+        } catch (e) { console.error("Animation error:", e); }
     }
 
-    // --- 3. Run Map Page Logic (Globe) ---
+    // --- 4. Map Page Logic ---
     if (isMapPage) {
-        initGlobe();
+        try {
+            initGlobe();
+        } catch (e) { console.error("Globe init error:", e); }
     }
 
-    // --- 4. Shared Logic (WebSocket & Icons) ---
+    // --- 5. WebSocket Connection ---
+    // We do this last so network delays don't block icons
     connectToStats(isMapPage);
-    if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 
 
 // --- Helper: Particle Animation ---
 function initParticles(canvas) {
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let particles = [];
     
@@ -101,9 +118,15 @@ function initGlobe() {
     const elem = document.getElementById('globe-viz');
     if(!elem) return;
 
+    // Check if Globe library is loaded
+    if (typeof Globe === 'undefined') {
+        console.error("Globe.gl library not loaded!");
+        return;
+    }
+
     world = Globe()
         (elem)
-        .backgroundColor('#000000') // Pure black background
+        .backgroundColor('#000000') 
         .width(window.innerWidth)
         .height(window.innerHeight)
         .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
@@ -121,7 +144,6 @@ function initGlobe() {
 function updateGlobeData(countryData) {
     if (!world || !countryData) return;
 
-    // Mapping for major countries - You can expand this list
     const countryCoords = {
         "US": { lat: 37.09, lng: -95.71, name: "USA" },
         "NL": { lat: 52.13, lng: 5.29, name: "Netherlands" },
@@ -134,7 +156,8 @@ function updateGlobeData(countryData) {
         "BR": { lat: -14.23, lng: -51.92, name: "Brazil" },
         "AU": { lat: -25.27, lng: 133.77, name: "Australia" },
         "CA": { lat: 56.13, lng: -106.34, name: "Canada" },
-        "RU": { lat: 61.52, lng: 105.31, name: "Russia" }
+        "RU": { lat: 61.52, lng: 105.31, name: "Russia" },
+        // Add more coordinates as needed
     };
 
     const points = [];
@@ -156,39 +179,40 @@ function updateGlobeData(countryData) {
 
 // --- WebSocket Logic (Shared) ---
 function connectToStats(isMapPage) {
-    // REPLACE WITH YOUR WORKER URL
     const wsUrl = "wss://joonify-stats-worker.larsvlasveld11.workers.dev";
     
-    // Simple reconnect logic
     const connect = () => {
-        const socket = new WebSocket(wsUrl);
+        try {
+            const socket = new WebSocket(wsUrl);
 
-        socket.onopen = () => console.log("Connected to Joonify stats.");
-        
-        socket.onmessage = (event) => {
-            try {
-                const stats = JSON.parse(event.data);
-                
-                // 1. Update Homepage Stats
-                if (!isMapPage) {
-                    updateStatOnPage(stats);
-                }
-                
-                // 2. Update Map Page Stats
-                if (isMapPage) {
-                    if (stats['map-data']) updateGlobeData(stats['map-data']);
-                    if (stats['visitors-count']) {
-                        const countEl = document.getElementById('map-visitor-count');
-                        if(countEl) countEl.textContent = `${stats['visitors-count'].toLocaleString()} Visitors`;
+            socket.onopen = () => console.log("Connected to Joonify stats.");
+            
+            socket.onmessage = (event) => {
+                try {
+                    const stats = JSON.parse(event.data);
+                    
+                    if (!isMapPage) updateStatOnPage(stats);
+                    
+                    if (isMapPage) {
+                        if (stats['map-data']) updateGlobeData(stats['map-data']);
+                        if (stats['visitors-count']) {
+                            const countEl = document.getElementById('map-visitor-count');
+                            if(countEl) countEl.textContent = `${Math.floor(stats['visitors-count']).toLocaleString()} Visitors`;
+                        }
                     }
+                } catch (error) {
+                    console.error("Data error:", error);
                 }
-            } catch (error) {
-                console.error("Data error:", error);
-            }
-        };
+            };
 
-        socket.onclose = () => setTimeout(connect, 5000);
-        socket.onerror = (e) => socket.close();
+            socket.onclose = () => setTimeout(connect, 5000);
+            socket.onerror = (e) => {
+                // Silently handle error to prevent console spam
+                socket.close();
+            };
+        } catch (e) {
+            console.error("WebSocket init error:", e);
+        }
     };
 
     connect();
@@ -198,7 +222,7 @@ function updateStatOnPage(stats) {
     for (const key in stats) {
         const element = document.getElementById(key);
         if (element) {
-            element.textContent = stats[key].toLocaleString();
+            element.textContent = Math.floor(stats[key]).toLocaleString();
         }
     }
 }
