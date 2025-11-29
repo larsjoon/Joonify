@@ -1,40 +1,61 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Joonify script loaded.");
+    
+    // --- 1. Fix Invisible Title & Animations ---
+    // We run this immediately so your title appears, regardless of other errors.
+    initScrollAnimations();
 
-    // --- 1. Load Icons Immediately (Priority) ---
-    // We wrap this in a try-catch so it never breaks the rest of the site
-    try {
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-            console.log("Icons rendered.");
-        } else {
-            console.error("Lucide library not found!");
-        }
-    } catch (e) { console.error("Icon error:", e); }
+    // --- 2. Fix Icons ---
+    // Try to render immediately, but also set a backup timer in case the library loads late.
+    if (window.lucide) {
+        window.lucide.createIcons();
+    } else {
+        // Backup: Try again every 100ms for 1 second
+        const iconCheck = setInterval(() => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+                clearInterval(iconCheck);
+            }
+        }, 100);
+        // Stop checking after 2 seconds
+        setTimeout(() => clearInterval(iconCheck), 2000);
+    }
 
-    // --- 2. Identify Page ---
+    // --- 3. Setup Logic ---
     const isMapPage = document.body.classList.contains('map-page');
     const particleCanvas = document.getElementById('particle-canvas');
 
-    // --- 3. Homepage Logic ---
+    // --- 4. Homepage Logic (Particles) ---
     if (!isMapPage && particleCanvas) {
         try {
             initParticles(particleCanvas);
-            initScrollAnimations();
-        } catch (e) { console.error("Animation error:", e); }
+        } catch (e) { console.error("Particle error:", e); }
     }
 
-    // --- 4. Map Page Logic ---
+    // --- 5. Map Page Logic (Globe) ---
     if (isMapPage) {
         try {
             initGlobe();
-        } catch (e) { console.error("Globe init error:", e); }
+        } catch (e) { console.error("Globe error:", e); }
     }
 
-    // --- 5. WebSocket Connection ---
-    // We do this last so network delays don't block icons
+    // --- 6. Connect to Stats ---
     connectToStats(isMapPage);
 });
+
+
+// --- Helper: Scroll Animations ---
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-mounted');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animated-item').forEach(item => observer.observe(item));
+}
 
 
 // --- Helper: Particle Animation ---
@@ -98,19 +119,6 @@ function initParticles(canvas) {
     window.addEventListener('resize', () => { resizeCanvas(); init(); });
 }
 
-// --- Helper: Scroll Animations ---
-function initScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-mounted');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.animated-item').forEach(item => observer.observe(item));
-}
 
 // --- Helper: 3D Globe Logic ---
 let world; 
@@ -118,9 +126,9 @@ function initGlobe() {
     const elem = document.getElementById('globe-viz');
     if(!elem) return;
 
-    // Check if Globe library is loaded
     if (typeof Globe === 'undefined') {
-        console.error("Globe.gl library not loaded!");
+        // Retry once if library loaded late
+        setTimeout(initGlobe, 500);
         return;
     }
 
@@ -157,7 +165,6 @@ function updateGlobeData(countryData) {
         "AU": { lat: -25.27, lng: 133.77, name: "Australia" },
         "CA": { lat: 56.13, lng: -106.34, name: "Canada" },
         "RU": { lat: 61.52, lng: 105.31, name: "Russia" },
-        // Add more coordinates as needed
     };
 
     const points = [];
@@ -177,15 +184,15 @@ function updateGlobeData(countryData) {
     world.pointsData(points);
 }
 
-// --- WebSocket Logic (Shared) ---
+
+// --- WebSocket Logic ---
 function connectToStats(isMapPage) {
     const wsUrl = "wss://joonify-stats-worker.larsvlasveld11.workers.dev";
     
     const connect = () => {
         try {
             const socket = new WebSocket(wsUrl);
-
-            socket.onopen = () => console.log("Connected to Joonify stats.");
+            socket.onopen = () => console.log("Connected to stats.");
             
             socket.onmessage = (event) => {
                 try {
@@ -200,21 +207,13 @@ function connectToStats(isMapPage) {
                             if(countEl) countEl.textContent = `${Math.floor(stats['visitors-count']).toLocaleString()} Visitors`;
                         }
                     }
-                } catch (error) {
-                    console.error("Data error:", error);
-                }
+                } catch (error) { console.error("Data error:", error); }
             };
 
             socket.onclose = () => setTimeout(connect, 5000);
-            socket.onerror = (e) => {
-                // Silently handle error to prevent console spam
-                socket.close();
-            };
-        } catch (e) {
-            console.error("WebSocket init error:", e);
-        }
+            socket.onerror = (e) => socket.close();
+        } catch (e) { console.error("WS error:", e); }
     };
-
     connect();
 }
 
