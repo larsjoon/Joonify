@@ -1,38 +1,20 @@
-/* --- CSS Variables (Dark Mode Default) --- */
+/* --- CSS Variables --- */
 :root {
     --bg-color: #0a191f;
-    --text-color: #f1f5f9; /* Adjusted for higher contrast */
-    --text-color-secondary: #cbd5e1; /* Adjusted for higher contrast */
-    --text-color-muted: #a1a1aa; /* Adjusted for higher contrast (social icons) */
+    --text-color: #e5e7eb;
+    --text-color-secondary: #d1d5db;
+    --text-color-muted: #9ca3af;
     --text-color-dark: #6b7280;
     --primary-color: #86efac;
     --primary-color-light: #bbf7d0;
-    --card-bg-color: rgba(6, 78, 59, 0.3); /* Adjusted for visibility */
-    --card-border-color: rgba(52, 211, 153, 0.3); /* Adjusted for visibility */
+    --card-bg-color: rgba(6, 78, 59, 0.2);
+    --card-border-color: rgba(52, 211, 153, 0.2);
     --card-shadow-color: rgba(0, 0, 0, 0.25);
     --card-hover-shadow-color: rgba(0, 0, 0, 0.35);
-    --particle-color: rgba(134, 239, 172, 0.15); /* Adjusted for subtle visibility */
+    --particle-color: rgba(173, 216, 230, 0.7);
     --white: #ffffff;
     --font-family-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-
-/* --- Light Mode Variables --- */
-html[data-theme='light'] {
-    --bg-color: #ffffff; /* Pure white background for maximum contrast */
-    --text-color: #111827; /* Darker text for better readability */
-    --text-color-secondary: #1f2937; /* Darker secondary text */
-    --text-color-muted: #4b5563; /* Darker muted text for better visibility */
-    --text-color-dark: #6b7280;
-    --primary-color: #059669; /* Much darker green for visibility on white */
-    --primary-color-light: #047857; /* Darker green for accents */
-    --card-bg-color: #f3f4f6; /* More visible gray for card backgrounds */
-    --card-border-color: rgba(0, 0, 0, 0.15); /* More visible borders */
-    --card-shadow-color: rgba(0, 0, 0, 0.15); /* Stronger shadows for better definition */
-    --card-hover-shadow-color: rgba(0, 0, 0, 0.25);
-    --particle-color: rgba(5, 150, 105, 0.4); /* Much more visible particles with darker green */
-    --white: #111827; /* Dark color for headings in light mode */
-}
-
 
 /* --- General & Body Setup --- */
 * {
@@ -60,7 +42,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
     overflow-x: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 html {
@@ -73,51 +54,6 @@ html {
     overflow-x: hidden;
     width: 100%;
 }
-
-/* --- Theme Toggle Button --- */
-.theme-toggle {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--card-border-color);
-    color: var(--text-color);
-    cursor: pointer;
-    padding: 0.75rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-    min-width: 48px;
-    min-height: 48px;
-}
-
-.theme-toggle:hover {
-    color: var(--primary-color);
-    background-color: var(--card-bg-color);
-    border-color: var(--primary-color);
-}
-
-.theme-toggle i {
-    font-size: 18px;
-    font-style: normal;
-}
-
-/* Light mode theme toggle styling */
-html[data-theme='light'] .theme-toggle {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.15);
-    color: var(--text-color);
-}
-
-html[data-theme='light'] .theme-toggle:hover {
-    background: rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-color);
-}
-
 
 /* --- Particle Canvas --- */
 #particle-canvas {
@@ -174,10 +110,6 @@ html[data-theme='light'] .theme-toggle:hover {
     max-width: 700px;
     display: block;
     flex-shrink: 0;
-}
-
-.philosophy-box {
-    font-size: 1rem; /* Base size for p */
 }
 
 .cta-section {
@@ -241,7 +173,6 @@ html[data-theme='light'] .theme-toggle:hover {
     letter-spacing: -0.025em;
     color: var(--white);
     margin: 0;
-    transition: color 0.3s ease;
 }
 
 #joonify-title {
@@ -258,7 +189,7 @@ html[data-theme='light'] .theme-toggle:hover {
 .subtitle {
     margin-top: 1.5rem;
     margin-bottom: 0;
-    font-size: 1.35rem; /* INCREASED from 1.25rem */
+    font-size: 1.25rem;
     color: var(--primary-color);
     font-weight: 400;
 }
@@ -266,12 +197,12 @@ html[data-theme='light'] .theme-toggle:hover {
 .philosophy-box {
     background-color: var(--card-bg-color);
     backdrop-filter: blur(4px);
-    padding: 2.5rem;
+    padding: 2.5rem 2rem;
     border-radius: 0.75rem;
     border: 1px solid var(--card-border-color);
     box-shadow: 0 20px 40px -12px var(--card-shadow-color);
     text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .philosophy-box:hover {
@@ -289,9 +220,8 @@ h2 {
 
 .philosophy-box p {
     color: var(--text-color-secondary);
-    line-height: 1.7; /* INCREASED from 1.625 */
+    line-height: 1.625;
     margin: 0;
-    font-size: 1.1rem; /* ADDED for better readability */
 }
 
 .highlight {
@@ -307,7 +237,7 @@ h2 {
     border-radius: 0.5rem;
     border: 1px solid var(--card-border-color);
     box-shadow: 0 25px 50px -12px var(--card-shadow-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .stat-card:hover, .service-card:hover {
@@ -343,7 +273,6 @@ h2 {
     font-weight: 700;
     color: var(--white);
     margin-bottom: 1rem;
-    transition: color 0.3s ease;
 }
 
 .stats-subtitle {
@@ -378,7 +307,7 @@ h2 {
 }
 
 .stat-description {
-    font-size: 0.95rem; /* INCREASED from 0.875rem */
+    font-size: 0.875rem;
     color: var(--text-color-muted);
     margin: 0;
 }
@@ -404,9 +333,8 @@ h2 {
 
 .service-description {
     color: var(--text-color-secondary);
-    line-height: 1.7; /* INCREASED from 1.625 */
+    line-height: 1.625;
     margin: 0;
-    font-size: 1.05rem; /* ADDED for better readability */
 }
 
 /* --- Footer --- */
@@ -416,8 +344,6 @@ h2 {
     z-index: 10;
     position: relative;
     box-sizing: border-box;
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 
 .footer-container {
@@ -433,56 +359,20 @@ h2 {
     align-items: center;
     gap: 1.5rem;
     flex-wrap: wrap;
-    min-height: 60px;
-    margin-bottom: 1rem;
 }
 
 .social-links a {
-    color: var(--text-color);
-    transition: color 0.3s ease, background-color 0.3s ease;
+    color: var(--text-color-muted);
+    transition: color 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 44px;
     min-height: 44px;
-    text-decoration: none;
-    border-radius: 8px;
-    padding: 8px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .social-links a:hover {
     color: var(--primary-color);
-    background-color: rgba(134, 239, 172, 0.1);
-    border-color: var(--primary-color);
-}
-
-.social-links a i {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 18px;
-    line-height: 1;
-}
-
-/* Fallback emoji styling */
-.social-links a i:not([data-lucide]) {
-    font-size: 20px;
-}
-
-/* Light mode specific social links styling */
-html[data-theme='light'] .social-links a {
-    background-color: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-html[data-theme='light'] .social-links a:hover {
-    background-color: rgba(22, 163, 74, 0.1);
 }
 
 .contact-info {
@@ -586,11 +476,6 @@ html[data-theme='light'] .social-links a:hover {
 
 /* Mobile-first optimizations */
 @media (max-width: 480px) {
-    .theme-toggle {
-        top: 1rem;
-        right: 1rem;
-    }
-
     .hero-section {
         padding: 2rem 1rem;
         min-height: 90vh;
@@ -611,7 +496,7 @@ html[data-theme='light'] .social-links a:hover {
     }
     
     .subtitle {
-        font-size: 1.1rem; /* Adjusted */
+        font-size: 1rem;
         margin-top: 1rem;
     }
     
@@ -637,7 +522,7 @@ html[data-theme='light'] .social-links a:hover {
     }
     
     .philosophy-box p {
-        font-size: 1rem; /* Adjusted */
+        font-size: 0.9rem;
         line-height: 1.6;
     }
     
@@ -673,7 +558,7 @@ html[data-theme='light'] .social-links a:hover {
     }
     
     .stat-description {
-        font-size: 0.85rem; /* Adjusted */
+        font-size: 0.8rem;
         line-height: 1.4;
     }
     
@@ -682,7 +567,7 @@ html[data-theme='light'] .social-links a:hover {
     }
     
     .service-description {
-        font-size: 0.95rem; /* Adjusted */
+        font-size: 0.9rem;
         line-height: 1.5;
     }
     
@@ -869,4 +754,113 @@ html[data-theme='light'] .social-links a:hover {
   .scroll-indicator {
       animation: none;
   }
+}
+
+/* --- Map Page Specific Styles --- */
+.map-page {
+    overflow: hidden; /* Prevent scrolling on the map page */
+    background-color: #000;
+}
+
+#globe-viz {
+    width: 100vw;
+    height: 100vh;
+}
+
+.map-overlay-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Let clicks pass through to the globe */
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.map-header {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.map-header h1 {
+    font-size: 2.5rem;
+    color: var(--white);
+    text-shadow: 0 0 20px rgba(134, 239, 172, 0.3);
+}
+
+.map-header p {
+    color: var(--primary-color);
+    margin-top: 0.5rem;
+}
+
+.back-home-btn {
+    pointer-events: auto;
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color-muted);
+    text-decoration: none;
+    font-weight: 500;
+    background: rgba(10, 25, 31, 0.6);
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.back-home-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: rgba(10, 25, 31, 0.9);
+}
+
+.map-stats {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    text-align: right;
+    background: rgba(10, 25, 31, 0.6);
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 0 rgba(134, 239, 172, 0.7);
+    animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(134, 239, 172, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(134, 239, 172, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(134, 239, 172, 0); }
+}
+
+#map-visitor-count {
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: 700;
 }

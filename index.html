@@ -16,20 +16,14 @@
     <meta property="twitter:url" content="https://www.joonify.dev/">
     <meta property="twitter:title" content="Joonify - The Soul of Intelligent Software">
     <meta property="twitter:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
-
     <link rel="stylesheet" href="./style.css">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/lucide@0.407.0/dist/lucide.min.js" xintegrity="sha384-Nlqp1F6kSqXf/nEM21Jcxg5e3v0V2P7Bq2sC9xGDLzVv0Zkpr0q0ZJdKz2u+OK3z" crossorigin="anonymous"></script>
     
     <script src="script.js" defer></script>
 </head>
 <body>
     <div id="app-container">
-        <!-- THEME TOGGLE BUTTON -->
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light and dark mode">
-            <i data-lucide="sun" class="theme-icon-sun">☀️</i>
-            <i data-lucide="moon" class="theme-icon-moon" style="display: none;">🌙</i>
-        </button>
-
         <canvas id="particle-canvas"></canvas>
 
         <!-- Section 1: Brand Reveal & Philosophy -->
@@ -92,6 +86,10 @@
                 <div class="stats-header animated-item">
                     <h2 class="stats-title">Growing Together</h2>
                     <p class="stats-subtitle">Real-time insights into our community and impact</p>
+                        <a href="/map/" style="display: inline-block; margin-top: 1rem; color: #86efac; text-decoration: none; border: 1px solid #86efac; padding: 0.5rem 1rem; border-radius: 99px; transition: all 0.3s ease;">
+                            View Live Map &rarr;
+                        </a>
+                    </div>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card animated-item" style="transition-delay: 100ms;">
@@ -122,22 +120,12 @@
             </div>
         </section>
 
-        <footer class="page-footer">
+        <footer class="page-footer animated-item">
             <div class="footer-container">
                 <div class="social-links">
-                    <a href="mailto:lars@joonify.dev" aria-label="Email Joonify" class="social-link-email">
-                        <i data-lucide="mail">📧</i>
-                    </a>
-                    <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn" class="social-link-linkedin">
-                        <i data-lucide="linkedin">💼</i>
-                    </a>
-                    <a href="https://github.com/larsjoon/Joonify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitHub" class="social-link-github">
-                        <i data-lucide="github">🐙</i>
-                    </a>
-                    <a href="https://twitter.com/joonify_nl" target="_blank" rel="noopener noreferrer" aria-label="Joonify on X (Twitter)" class="social-link-twitter">
-                        <i data-lucide="twitter">𝕏</i>
-                    </a>
-
+                    <a href="mailto:lars@joonify.dev" aria-label="Email Joonify"><i data-lucide="mail"></i></a>
+                    <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn"><i data-lucide="linkedin"></i></a>
+                    <a href="https://gitlab.com/larsv0/Joonify.git" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitLab"><i data-lucide="gitlab"></i></a>
                 </div>
                 <div class="contact-info">
                     <p><a href="mailto:lars@joonify.dev">lars@joonify.dev</a></p>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joonify - Live Global Activity</title>
+    
+    <meta name="description" content="Real-time visualization of Joonify's global activity and user connections.">
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="//unpkg.com/globe.gl"></script>
+    
+    <script src="../script.js" defer></script>
+</head>
+<body class="map-page">
+    
+    <div id="globe-viz"></div>
+
+    <div class="map-overlay-ui">
+        <div class="map-header">
+            <h1>Global Soul</h1>
+            <p>Real-time connections</p>
+        </div>
+
+        <a href="/" class="back-home-btn">
+            <i data-lucide="arrow-left"></i>
+            Back to Home
+        </a>
+
+        <div class="map-stats">
+            <div class="live-indicator">
+                <span class="pulse-dot"></span> Live
+            </div>
+            <div id="map-visitor-count">Connecting...</div>
+        </div>
+    </div>
+
+</body>
+</html>
