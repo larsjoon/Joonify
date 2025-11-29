@@ -277,7 +277,27 @@ h2 {
 .stats-subtitle {
     font-size: 1.125rem;
     color: var(--primary-color);
-    margin: 0;
+    margin: 0 0 1.5rem 0;
+}
+
+.map-button {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    border: 1px solid var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.map-button:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(134, 239, 172, 0.3);
 }
 
 /* --- Stats Section --- */
@@ -314,9 +334,7 @@ h2 {
 .stat-icon, .service-icon {
     margin-bottom: 1rem;
     color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-block;
 }
 
 .stat-icon svg, .service-icon svg {
@@ -325,6 +343,7 @@ h2 {
     stroke: currentColor;
     stroke-width: 2;
     fill: none;
+    display: block;
 }
 
 /* Ensure icons in social links are visible */

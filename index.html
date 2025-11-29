@@ -18,9 +18,10 @@
     <meta property="twitter:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
     <link rel="stylesheet" href="./style.css">
 
-    <script src="https://unpkg.com/lucide@0.407.0/dist/lucide.min.js" xintegrity="sha384-Nlqp1F6kSqXf/nEM21Jcxg5e3v0V2P7Bq2sC9xGDLzVv0Zkpr0q0ZJdKz2u+OK3z" crossorigin="anonymous"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
-    <script src="/script.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div id="app-container">
@@ -86,10 +87,9 @@
                 <div class="stats-header animated-item">
                     <h2 class="stats-title">Growing Together</h2>
                     <p class="stats-subtitle">Real-time insights into our community and impact</p>
-                        <a href="/map/" style="display: inline-block; margin-top: 1rem; color: #86efac; text-decoration: none; border: 1px solid #86efac; padding: 0.5rem 1rem; border-radius: 99px; transition: all 0.3s ease;">
-                            View Live Map &rarr;
-                        </a>
-                    </div>
+                    <a href="/map/" class="map-button">
+                        View Live Map &rarr;
+                    </a>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card animated-item" style="transition-delay: 100ms;">
@@ -124,6 +124,7 @@
             <div class="footer-container">
                 <div class="social-links">
                     <a href="mailto:lars@joonify.dev" aria-label="Email Joonify"><i data-lucide="mail"></i></a>
+                    <a href="https://x.com/joonify_nl" target="_blank" rel="noopener noreferrer" aria-label="Joonify on X"><i data-lucide="twitter"></i></a>
                     <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn"><i data-lucide="linkedin"></i></a>
                     <a href="https://gitlab.com/larsv0/Joonify.git" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitLab"><i data-lucide="gitlab"></i></a>
                 </div>

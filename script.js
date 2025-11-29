@@ -131,9 +131,19 @@ function initGlobe() {
 }
 
 function updateGlobeData(countryData) {
-    if (!world || !countryData) return;
+    if (!world) {
+        console.warn('Globe not initialized yet');
+        return;
+    }
+    
+    if (!countryData) {
+        console.warn('No country data received');
+        return;
+    }
 
-    // Mapping for major countries - You can expand this list
+    console.log('Received country data:', countryData);
+
+    // Expanded mapping for more countries
     const countryCoords = {
         "US": { lat: 37.09, lng: -95.71, name: "USA" },
         "NL": { lat: 52.13, lng: 5.29, name: "Netherlands" },
@@ -146,23 +156,71 @@ function updateGlobeData(countryData) {
         "BR": { lat: -14.23, lng: -51.92, name: "Brazil" },
         "AU": { lat: -25.27, lng: 133.77, name: "Australia" },
         "CA": { lat: 56.13, lng: -106.34, name: "Canada" },
-        "RU": { lat: 61.52, lng: 105.31, name: "Russia" }
+        "RU": { lat: 61.52, lng: 105.31, name: "Russia" },
+        "ES": { lat: 40.46, lng: -3.74, name: "Spain" },
+        "IT": { lat: 41.87, lng: 12.56, name: "Italy" },
+        "MX": { lat: 23.63, lng: -102.55, name: "Mexico" },
+        "AR": { lat: -38.41, lng: -63.61, name: "Argentina" },
+        "ZA": { lat: -30.55, lng: 22.93, name: "South Africa" },
+        "KR": { lat: 35.90, lng: 127.76, name: "South Korea" },
+        "SE": { lat: 60.12, lng: 18.64, name: "Sweden" },
+        "NO": { lat: 60.47, lng: 8.46, name: "Norway" },
+        "PL": { lat: 51.91, lng: 19.14, name: "Poland" },
+        "BE": { lat: 50.50, lng: 4.47, name: "Belgium" },
+        "CH": { lat: 46.81, lng: 8.22, name: "Switzerland" },
+        "AT": { lat: 47.51, lng: 14.55, name: "Austria" },
+        "DK": { lat: 56.26, lng: 9.50, name: "Denmark" },
+        "FI": { lat: 61.92, lng: 25.74, name: "Finland" },
+        "IE": { lat: 53.41, lng: -8.24, name: "Ireland" },
+        "PT": { lat: 39.39, lng: -8.22, name: "Portugal" },
+        "GR": { lat: 39.07, lng: 21.82, name: "Greece" },
+        "TR": { lat: 38.96, lng: 35.24, name: "Turkey" },
+        "IL": { lat: 31.04, lng: 34.85, name: "Israel" },
+        "SG": { lat: 1.35, lng: 103.81, name: "Singapore" },
+        "TH": { lat: 15.87, lng: 100.99, name: "Thailand" },
+        "ID": { lat: -0.78, lng: 113.92, name: "Indonesia" },
+        "MY": { lat: 4.21, lng: 101.97, name: "Malaysia" },
+        "PH": { lat: 12.87, lng: 121.77, name: "Philippines" },
+        "VN": { lat: 14.05, lng: 108.27, name: "Vietnam" },
+        "NZ": { lat: -40.90, lng: 174.88, name: "New Zealand" },
+        "CL": { lat: -35.67, lng: -71.54, name: "Chile" },
+        "CO": { lat: 4.57, lng: -74.29, name: "Colombia" },
+        "PE": { lat: -9.18, lng: -75.01, name: "Peru" },
+        "EG": { lat: 26.82, lng: 30.80, name: "Egypt" },
+        "NG": { lat: 9.08, lng: 8.67, name: "Nigeria" },
+        "KE": { lat: -0.02, lng: 37.90, name: "Kenya" },
+        "AE": { lat: 23.42, lng: 53.84, name: "UAE" },
+        "SA": { lat: 23.88, lng: 45.07, name: "Saudi Arabia" },
+        "CZ": { lat: 49.81, lng: 15.47, name: "Czech Republic" },
+        "RO": { lat: 45.94, lng: 24.96, name: "Romania" },
+        "HU": { lat: 47.16, lng: 19.50, name: "Hungary" },
+        "UA": { lat: 48.37, lng: 31.16, name: "Ukraine" }
     };
 
     const points = [];
-    countryData.forEach(item => {
-        const coords = countryCoords[item.code];
+    
+    // Handle both array and object formats
+    const dataArray = Array.isArray(countryData) ? countryData : Object.entries(countryData).map(([code, count]) => ({ code, count }));
+    
+    dataArray.forEach(item => {
+        const code = item.code || item.country || item.countryCode;
+        const count = item.count || item.visitors || 1;
+        const coords = countryCoords[code];
+        
         if (coords) {
             points.push({
                 lat: coords.lat,
                 lng: coords.lng,
-                size: Math.max(0.2, Math.log(item.count + 1) * 0.5),
+                size: Math.max(0.3, Math.log(count + 1) * 0.6),
                 color: '#86efac',
-                label: `${coords.name}: ${item.count}`
+                label: `${coords.name}: ${count} visitor${count !== 1 ? 's' : ''}`
             });
+        } else {
+            console.log(`No coordinates found for country code: ${code}`);
         }
     });
 
+    console.log(`Displaying ${points.length} points on globe`);
     world.pointsData(points);
 }
 
@@ -180,6 +238,7 @@ function connectToStats(isMapPage) {
         socket.onmessage = (event) => {
             try {
                 const stats = JSON.parse(event.data);
+                console.log('Received stats:', stats);
                 
                 // 1. Update Homepage Stats
                 if (!isMapPage) {
@@ -188,7 +247,16 @@ function connectToStats(isMapPage) {
                 
                 // 2. Update Map Page Stats
                 if (isMapPage) {
-                    if (stats['map-data']) updateGlobeData(stats['map-data']);
+                    // Try multiple possible keys for map data
+                    const mapData = stats['map-data'] || stats.mapData || stats.countries || stats.countryData;
+                    
+                    if (mapData) {
+                        console.log('Found map data:', mapData);
+                        updateGlobeData(mapData);
+                    } else {
+                        console.warn('No map data found in stats. Available keys:', Object.keys(stats));
+                    }
+                    
                     if (stats['visitors-count']) {
                         const countEl = document.getElementById('map-visitor-count');
                         if(countEl) countEl.textContent = `${stats['visitors-count'].toLocaleString()} Visitors`;
