@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initIcons();
 });
 
-
 // --- Helper: Particle Animation ---
 function initParticles(canvas) {
     const ctx = canvas.getContext('2d');
