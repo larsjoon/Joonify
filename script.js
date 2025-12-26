@@ -49,7 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                message: document.getElementById('message').value
+                message: document.getElementById('message').value,
+                // NEW: Grab the token from the hidden input Turnstile creates
+                token: document.querySelector('[name="cf-turnstile-response"]').value
             };
 
             try {
