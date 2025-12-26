@@ -1,263 +1,279 @@
-/**
- * Helper: Generate HMAC-SHA256 signature
- */
-async function createSignature(secret, body) {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey( "raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-    const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
-    return Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-  
-  /**
-   * Helper: Send Email via Resend
-   */
-  async function sendEmail(env, name, email, message) {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from: "onboarding@resend.dev", // Use this or your verified domain
-        to: "lars@joonify.dev",      // <--- YOUR EMAIL ADDRESS
-        reply_to: email,
-        subject: `New Contact from ${name} (Joonify)`,
-        html: `
-          <h3>New Message from Joonify.dev</h3>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Message:</strong></p>
-          <blockquote style="background: #f4f4f4; padding: 10px; border-left: 4px solid #86efac;">${message}</blockquote>
-        `
-      })
-    });
-    return res.ok;
-  }
-  
-  /**
-   * CORE LOGIC: Fetch Analytics & Update DO
-   */
-  async function runAnalyticsUpdate(env) {
-      console.log("Starting Analytics Update...");
-      const durableObjectId = env.STATS_DO.idFromName("Joonify-Live-Stats-Singleton");
-      const durableObjectStub = env.STATS_DO.get(durableObjectId);
-  
-      // Timeframe 1: Last 30 Days (For Total Count)
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      
-      // Timeframe 2: Last 23 Hours (For Map Data - Safety buffer for Free Plan limit)
-      const oneDayAgo = new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString();
-  
-      const query = `{
-        viewer {
-          zones(filter: {zoneTag: "${env.CLOUDFLARE_ZONE_ID}"}) {
-            
-            # 1. Total Count (Last 30 Days)
-            httpRequests1dGroups(limit: 30, filter: {date_gt: "${thirtyDaysAgo}"}) {
-              uniq { uniques }
-            }
-            
-            # 2. Map Data (Last 23 Hours - Safe Limit)
-            httpRequestsAdaptiveGroups(limit: 5000, filter: {datetime_gt: "${oneDayAgo}"}) {
-              count
-              dimensions {
-                clientCountryName
-              }
-            }
-          }
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 1. Identify which page we are on ---
+    const isMapPage = document.body.classList.contains('map-page');
+    const particleCanvas = document.getElementById('particle-canvas');
+
+    // --- 2. Run Homepage Logic (Particles & Scroll Animations) ---
+    if (!isMapPage && particleCanvas) {
+        initParticles(particleCanvas);
+        initScrollAnimations();
+    }
+
+    // --- 3. Run Map Page Logic (Globe) ---
+    if (isMapPage) {
+        initGlobe();
+    }
+
+    // --- 4. Shared Logic (WebSocket & Icons) ---
+    connectToStats(isMapPage);
+    
+    // Initialize Lucide icons with retry logic
+    const initIcons = () => {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            // Retry after a short delay if lucide isn't loaded yet
+            setTimeout(initIcons, 100);
         }
-      }`;
-  
-      const analyticsResponse = await fetch("https://api.cloudflare.com/client/v4/graphql", {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${env.ANALYTICS_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
-      });
-      
-      const responseBody = await analyticsResponse.json();
-  
-      if (responseBody.errors && responseBody.errors.length > 0) {
-          throw new Error(`GraphQL Error: ${JSON.stringify(responseBody.errors)}`);
-      }
-      if (!responseBody.data || !responseBody.data.viewer) {
-          throw new Error("Invalid data structure from Cloudflare API.");
-      }
-  
-      const zoneData = responseBody.data.viewer.zones[0];
-      
-      // --- PROCESS 1: Total Visitors (30 Days) ---
-      const dailyGroups = zoneData.httpRequests1dGroups;
-      const newVisitorCount = dailyGroups.reduce((total, item) => total + item.uniq.uniques, 0);
-  
-      // --- PROCESS 2: Map Data (23 Hours) ---
-      const adaptiveGroups = zoneData.httpRequestsAdaptiveGroups;
-      const countryMap = {};
-      
-      adaptiveGroups.forEach(item => {
-          const code = item.dimensions.clientCountryName;
-          const count = item.count;
-          
-          if(code && code !== "T1" && code !== "XX") { 
-              countryMap[code] = (countryMap[code] || 0) + count;
-          }
-      });
-      
-      const finalMapData = Object.entries(countryMap).map(([code, count]) => ({ code, count }));
-      const countriesServedCount = finalMapData.length;
-  
-      // --- UPDATE DURABLE OBJECT ---
-      const internalRequest = new Request("http://internal/api/get-stats", {
-        headers: { 'X-Internal-Secret': env.JOONIFY_HMAC_KEY } 
-      });
-      const currentStatsResponse = await durableObjectStub.fetch(internalRequest);
-      const currentStats = await currentStatsResponse.json();
-  
-      const updatedStats = { 
-        ...currentStats, 
-        "visitors-count": newVisitorCount,
-        "countries-count": countriesServedCount, // Based on active countries today
-        "map-data": finalMapData
-      };
-  
-      const body = JSON.stringify(updatedStats);
-      const signature = await createSignature(env.JOONIFY_HMAC_KEY, body);
-      
-      const updateRequest = new Request("http://internal/api/update", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Signature': signature },
-          body: body
-      });
-      
-      await durableObjectStub.fetch(updateRequest);
-      
-      return {
-          success: true,
-          visitors: newVisitorCount,
-          mapDataLength: finalMapData.length,
-          mapData: finalMapData
-      };
-  }
-  
-  
-  /**
-   * MAIN WORKER HANDLER
-   */
-  export default {
-    async fetch(request, env, ctx) {
-      const url = new URL(request.url);
-  
-      // --- ROUTE 1: Contact Form ---
-      if (url.pathname === "/api/contact" && request.method === "POST") {
-        try {
-          const { name, email, message } = await request.json();
-  
-          // Basic Validation
-          if (!name || !email || !message) {
-            return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
-          }
-  
-          // Send Email
-          const sent = await sendEmail(env, name, email, message);
-          
-          if (sent) {
-            return new Response(JSON.stringify({ success: true }), { 
-              headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } 
+    };
+    initIcons();
+
+    // --- 5. Contact Form Logic ---
+    const contactForm = document.getElementById('contact-form');
+    const statusDiv = document.getElementById('form-status');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            // Loading State
+            btn.disabled = true;
+            btn.innerHTML = 'Sending...';
+            statusDiv.textContent = '';
+            statusDiv.className = 'form-status';
+
+            // Gather Data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                // Send to Worker
+                const response = await fetch('https://joonify-stats-worker.larsvlasveld11.workers.dev/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    statusDiv.textContent = "Message sent successfully! I'll be in touch soon.";
+                    statusDiv.classList.add('success');
+                    contactForm.reset();
+                } else {
+                    throw new Error(result.error || 'Failed to send');
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.textContent = "Something went wrong. Please try again or email me directly.";
+                statusDiv.classList.add('error');
+            } finally {
+                // Reset Button
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                if(window.lucide) window.lucide.createIcons();
+            }
+        });
+    }
+});
+
+// --- Helper: Particle Animation ---
+function initParticles(canvas) {
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    
+    const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    };
+    
+    class Particle {
+        constructor(x, y) {
+            this.x = x; this.y = y;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+            this.color = `rgba(173, 216, 230, ${Math.random() * 0.5 + 0.2})`;
+        }
+        update() {
+            this.x += this.speedX; this.y += this.speedY;
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+            }
+        }
+        draw() {
+            ctx.fillStyle = this.color; ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    const init = () => {
+        particles = [];
+        const numberOfParticles = Math.floor((canvas.width * canvas.height) / 10000);
+        for (let i = 0; i < numberOfParticles; i++) particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+    };
+
+    const connect = () => {
+        for (let a = 0; a < particles.length; a++) {
+            for (let b = a; b < particles.length; b++) {
+                const distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2);
+                if (distance < 100) {
+                    ctx.strokeStyle = `rgba(173, 216, 230, ${ (1 - distance / 100) * 0.5 })`;
+                    ctx.lineWidth = 0.5; ctx.beginPath();
+                    ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke();
+                }
+            }
+        }
+    };
+
+    const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        connect();
+        requestAnimationFrame(animate);
+    };
+
+    resizeCanvas(); init(); animate();
+    window.addEventListener('resize', () => { resizeCanvas(); init(); });
+}
+
+// --- Helper: Scroll Animations ---
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-mounted');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animated-item').forEach(item => observer.observe(item));
+}
+
+// --- Helper: 3D Globe Logic ---
+let world; 
+function initGlobe() {
+    const elem = document.getElementById('globe-viz');
+    if(!elem) return;
+
+    // Use try-catch in case Globe library is missing
+    try {
+        world = Globe()
+            (elem)
+            .backgroundColor('#000000') // Pure black background
+            .width(window.innerWidth)
+            .height(window.innerHeight)
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+            .pointAltitude(0.01)
+            .pointColor('color')
+            .pointRadius('size')
+            .pointLabel('label')
+            .atmosphereColor('#86efac')
+            .atmosphereAltitude(0.15);
+
+        world.controls().autoRotate = true;
+        world.controls().autoRotateSpeed = 0.6;
+    } catch(e) {
+        console.error("Globe init failed:", e);
+    }
+}
+
+function updateGlobeData(countryData) {
+    if (!world || !countryData) return;
+
+    console.log('Updating globe with:', countryData);
+
+    const countryCoords = {
+        "US": { lat: 37.09, lng: -95.71, name: "USA" },
+        "NL": { lat: 52.13, lng: 5.29, name: "Netherlands" },
+        "DE": { lat: 51.16, lng: 10.45, name: "Germany" },
+        "GB": { lat: 55.37, lng: -3.43, name: "UK" },
+        "FR": { lat: 46.22, lng: 2.21, name: "France" },
+        "IN": { lat: 20.59, lng: 78.96, name: "India" },
+        "CN": { lat: 35.86, lng: 104.19, name: "China" },
+        "JP": { lat: 36.20, lng: 138.25, name: "Japan" },
+        "BR": { lat: -14.23, lng: -51.92, name: "Brazil" },
+        "AU": { lat: -25.27, lng: 133.77, name: "Australia" },
+        "CA": { lat: 56.13, lng: -106.34, name: "Canada" },
+        "RU": { lat: 61.52, lng: 105.31, name: "Russia" },
+        // ... add more as needed
+    };
+
+    const points = [];
+    
+    const dataArray = Array.isArray(countryData) ? countryData : Object.entries(countryData).map(([code, count]) => ({ code, count }));
+    
+    dataArray.forEach(item => {
+        const code = item.code || item.country;
+        const count = item.count || item.visitors || 1;
+        const coords = countryCoords[code];
+        
+        if (coords) {
+            points.push({
+                lat: coords.lat,
+                lng: coords.lng,
+                size: Math.max(0.3, Math.log(count + 1) * 0.6),
+                color: '#86efac',
+                label: `${coords.name}: ${count} visitor${count !== 1 ? 's' : ''}`
             });
-          } else {
-            return new Response(JSON.stringify({ error: "Failed to send email" }), { status: 500 });
-          }
-        } catch (err) {
-          return new Response(JSON.stringify({ error: err.message }), { status: 500 });
         }
-      }
-  
-      // --- ROUTE 2: Force Update (Manual Trigger) ---
-      if (url.pathname === "/api/force-update") {
-          const key = url.searchParams.get("key");
-          if (key !== env.JOONIFY_HMAC_KEY) {
-              return new Response("Unauthorized", { status: 401 });
-          }
-          try {
-              const result = await runAnalyticsUpdate(env);
-              return new Response(JSON.stringify(result, null, 2), { 
-                  headers: { "Content-Type": "application/json" } 
-              });
-          } catch (error) {
-              return new Response(`Update Failed: ${error.message}`, { status: 500 });
-          }
-      }
-  
-      // --- DEFAULT: Route to Durable Object (Stats & WebSocket) ---
-      let id = env.STATS_DO.idFromName("Joonify-Live-Stats-Singleton");
-      let stub = env.STATS_DO.get(id);
-      return stub.fetch(request);
-    },
-  
-    /**
-     * SCHEDULED HANDLER (Cron Job)
-     */
-    async scheduled(controller, env, ctx) {
-      ctx.waitUntil(runAnalyticsUpdate(env).catch(err => console.error(err)));
-    }
-  };
-  
-  
-  /**
-   * DURABLE OBJECT CLASS
-   */
-  export class StatsObject {
-    constructor(state, env) { this.state = state; this.env = env; this.sessions = []; }
+    });
+
+    world.pointsData(points);
+}
+
+// --- WebSocket Logic (Shared) ---
+function connectToStats(isMapPage) {
+    const wsUrl = "wss://joonify-stats-worker.larsvlasveld11.workers.dev";
     
-    async fetch(request) {
-      const url = new URL(request.url);
-  
-      // Endpoint to retrieve stats internally/externally
-      if (url.pathname === "/api/get-stats") {
-        if (request.headers.get('X-Internal-Secret') !== this.env.JOONIFY_HMAC_KEY) return new Response("Forbidden", { status: 403 });
-        const stats = await this.env.STATS_KV.get("stats", "json") || {}; 
-        return new Response(JSON.stringify(stats), { headers: { 'Content-Type': 'application/json' } });
-      }
-  
-      // Endpoint to update stats securely
-      if (url.pathname === "/api/update") {
-        const signature = request.headers.get('X-Signature');
-        const bodyText = await request.clone().text();
-        const isValid = await this.verifySignature(bodyText, this.env.JOONIFY_HMAC_KEY, signature);
-        if (!isValid) return new Response("Invalid signature", { status: 401 });
-  
-        const currentStats = await this.env.STATS_KV.get("stats", "json") || {};
-        const newStats = JSON.parse(bodyText);
-        const mergedStats = { ...currentStats, ...newStats };
-  
-        const finalBody = JSON.stringify(mergedStats);
-        await this.env.STATS_KV.put("stats", finalBody);
-        this.broadcast(finalBody);
-        return new Response("Stats updated", { status: 200 });
-      }
-  
-      // WebSocket Upgrade
-      if (request.headers.get("Upgrade") === "websocket") {
-        const [client, server] = Object.values(new WebSocketPair());
-        await this.handleSession(server);
-        return new Response(null, { status: 101, webSocket: client });
-      }
-      return new Response("Not found", { status: 404 });
+    const connect = () => {
+        try {
+            const socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => console.log("Connected to Joonify stats.");
+            
+            socket.onmessage = (event) => {
+                try {
+                    const stats = JSON.parse(event.data);
+                    
+                    if (!isMapPage) {
+                        updateStatOnPage(stats);
+                    }
+                    
+                    if (isMapPage) {
+                        const mapData = stats['map-data'] || stats.mapData;
+                        if (mapData) updateGlobeData(mapData);
+                        
+                        if (stats['visitors-count']) {
+                            const countEl = document.getElementById('map-visitor-count');
+                            if(countEl) countEl.textContent = `${Math.floor(stats['visitors-count']).toLocaleString()} Visitors`;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Data error:", error);
+                }
+            };
+
+            socket.onclose = () => setTimeout(connect, 5000);
+            socket.onerror = (e) => socket.close();
+        } catch (e) { console.error("WS Error:", e); }
+    };
+
+    connect();
+}
+
+function updateStatOnPage(stats) {
+    for (const key in stats) {
+        const element = document.getElementById(key);
+        if (element) {
+            element.textContent = Math.floor(stats[key]).toLocaleString();
+        }
     }
-  
-    async handleSession(server) {
-      server.accept(); this.sessions.push(server);
-      server.addEventListener("close", () => { this.sessions = this.sessions.filter(s => s !== server); });
-      const currentStats = await this.env.STATS_KV.get("stats");
-      if (currentStats) server.send(currentStats);
-    }
-    
-    broadcast(message) { this.sessions.forEach(s => { try { s.send(message) } catch (err) {} }); }
-    
-    async verifySignature(body, secret, signature) {
-      const encoder = new TextEncoder();
-      const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-      const sigBuf = Uint8Array.from(signature.match(/../g).map(h => parseInt(h, 16)));
-      return crypto.subtle.verify("HMAC", key, sigBuf, encoder.encode(body));
-    }
-  }
+}
