@@ -1107,3 +1107,28 @@ h2 {
         justify-content: space-between;
     }
 }
+
+/* --- Legal Footer --- */
+.legal-footer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.copyright {
+    color: var(--text-color-dark);
+    font-size: 0.75rem;
+    margin: 0;
+}
+
+.kvk-number {
+    color: var(--text-color-dark);
+    font-size: 0.65rem; /* Tiny font size */
+    opacity: 0.4;        /* Make it subtle */
+    margin-top: 0.25rem;
+    font-family: monospace; /* Gives it a technical/legal feel */
+    letter-spacing: 0.05em;
+}
+
+.kvk-number:hover {
+    opacity: 0.8; /* Gets clearer when you hover over it */
+}
