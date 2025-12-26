@@ -110,6 +110,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- Helper: Particle Animation ---
 function initParticles(canvas) {
     const ctx = canvas.getContext('2d');
+    
+    // Check if we are on the 404 page
+    const is404 = document.body.classList.contains('page-404');
+
+    // CONFIGURATION
+    const config = is404 ? {
+        color: 'rgba(239, 68, 68,', // Red for Error
+        speedY_min: 1,              // Falling down speed (min)
+        speedY_max: 3,              // Falling down speed (max)
+        speedX_dev: 0.5,            // Slight horizontal drift
+        connect: false              // Don't draw lines (makes it look like rain/debris)
+    } : {
+        color: 'rgba(173, 216, 230,', // Blue/Cyan for Normal
+        speedY_min: -0.25,
+        speedY_max: 0.25,
+        speedX_dev: 0.25,
+        connect: true               // Draw connection lines
+    };
+
     let particles = [];
     
     const resizeCanvas = () => {
@@ -119,21 +138,47 @@ function initParticles(canvas) {
     
     class Particle {
         constructor(x, y) {
-            this.x = x; this.y = y;
+            this.x = x; 
+            this.y = y;
             this.size = Math.random() * 2 + 0.5;
-            this.speedX = Math.random() * 0.5 - 0.25;
-            this.speedY = Math.random() * 0.5 - 0.25;
-            this.color = `rgba(173, 216, 230, ${Math.random() * 0.5 + 0.2})`;
+            
+            // Logic for 404 vs Normal movement
+            this.speedX = Math.random() * config.speedX_dev - (config.speedX_dev / 2);
+            
+            if (is404) {
+                // Falling Down
+                this.speedY = Math.random() * (config.speedY_max - config.speedY_min) + config.speedY_min; 
+            } else {
+                // Floating Randomly
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+            
+            this.color = `${config.color} ${Math.random() * 0.5 + 0.2})`;
         }
         update() {
-            this.x += this.speedX; this.y += this.speedY;
-            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+            this.x += this.speedX; 
+            this.y += this.speedY;
+
+            // Reset logic
+            if (is404) {
+                // If fell off bottom, reset to top
+                if (this.y > canvas.height) {
+                    this.y = 0;
+                    this.x = Math.random() * canvas.width;
+                }
+            } else {
+                // Bounce/Reset for normal page
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.x = Math.random() * canvas.width; 
+                    this.y = Math.random() * canvas.height;
+                }
             }
         }
         draw() {
-            ctx.fillStyle = this.color; ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = this.color; 
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); 
+            ctx.fill();
         }
     }
 
@@ -144,11 +189,14 @@ function initParticles(canvas) {
     };
 
     const connect = () => {
+        // Only run connection logic if enabled
+        if (!config.connect) return; 
+
         for (let a = 0; a < particles.length; a++) {
             for (let b = a; b < particles.length; b++) {
                 const distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2);
                 if (distance < 100) {
-                    ctx.strokeStyle = `rgba(173, 216, 230, ${ (1 - distance / 100) * 0.5 })`;
+                    ctx.strokeStyle = `${config.color} ${ (1 - distance / 100) * 0.5 })`;
                     ctx.lineWidth = 0.5; ctx.beginPath();
                     ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke();
                 }
