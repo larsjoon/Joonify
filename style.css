@@ -1280,3 +1280,27 @@ h2 {
         bottom: 4.5rem;
     }
 }
+/* Update the close button style to be a shared class */
+.ai-icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.ai-icon-btn:hover {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure the icon inside is sized correctly */
+.ai-icon-btn svg {
+    width: 20px;
+    height: 20px;
+}
