@@ -105,6 +105,67 @@ document.addEventListener('DOMContentLoaded', () => {
             privacyBanner.classList.remove('visible');
         });
     }
+    // --- Joon-AI Chat Logic ---
+    const aiToggle = document.getElementById('ai-toggle');
+    const aiClose = document.getElementById('ai-close');
+    const aiWindow = document.getElementById('ai-window');
+    const aiForm = document.getElementById('ai-input-form');
+    const aiInput = document.getElementById('ai-input');
+    const aiMessages = document.getElementById('ai-messages');
+
+    if (aiToggle && aiWindow) {
+        // Toggle Window
+        aiToggle.addEventListener('click', () => {
+            aiWindow.classList.toggle('open');
+            if (aiWindow.classList.contains('open')) setTimeout(() => aiInput.focus(), 100);
+        });
+        
+        aiClose.addEventListener('click', () => aiWindow.classList.remove('open'));
+
+        // Handle Chat Submission
+        aiForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = aiInput.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            addMessage(text, 'user');
+            aiInput.value = '';
+            
+            // 2. Add Loading State
+            const loadingId = addMessage('Thinking...', 'bot');
+
+            try {
+                // 3. Call Worker AI
+                const response = await fetch('https://joonify-stats-worker.larsvlasveld11.workers.dev/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                
+                const data = await response.json();
+                
+                // 4. Update Loading Message with AI Response
+                const loadingEl = document.querySelector(`[data-id="${loadingId}"]`);
+                if (loadingEl) loadingEl.textContent = data.response || "I encountered an error. Please try again.";
+                
+            } catch (err) {
+                const loadingEl = document.querySelector(`[data-id="${loadingId}"]`);
+                if (loadingEl) loadingEl.textContent = "Error connecting to Joon-AI.";
+            }
+        });
+    }
+
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = `ai-message ${sender}`;
+        div.textContent = text;
+        const id = Date.now();
+        div.dataset.id = id;
+        aiMessages.appendChild(div);
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+        return id;
+    }
 });
 
 // --- Helper: Particle Animation ---
