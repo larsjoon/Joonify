@@ -1023,3 +1023,87 @@ h2 {
 
 .form-status.success { color: var(--primary-color); }
 .form-status.error { color: #ef4444; }
+
+/* --- Privacy Banner --- */
+.privacy-banner {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(150%); /* Start hidden below screen */
+    width: 90%;
+    max-width: 600px;
+    background-color: rgba(10, 25, 31, 0.8); /* Darker opacity for readability */
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border-color);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* Above everything else */
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.privacy-banner.visible {
+    transform: translateX(-50%) translateY(0);
+}
+
+.privacy-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.privacy-icon {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.privacy-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    line-height: 1.5;
+}
+
+.highlight-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--primary-color);
+}
+
+.privacy-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.privacy-link {
+    font-size: 0.85rem;
+    color: var(--text-color-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.privacy-link:hover {
+    color: var(--white);
+}
+
+.small-btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    min-height: auto;
+}
+
+/* Mobile Tweak */
+@media (max-width: 600px) {
+    .privacy-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .privacy-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

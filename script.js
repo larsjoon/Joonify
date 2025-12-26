@@ -83,6 +83,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    // --- Privacy Banner Logic ---
+    const privacyBanner = document.getElementById('privacy-banner');
+    const privacyAcceptBtn = document.getElementById('privacy-accept');
+    
+    // Check if user has already accepted
+    const hasAccepted = localStorage.getItem('joonify-privacy-accepted');
+
+    if (!hasAccepted && privacyBanner) {
+        // Show after a small delay (polite)
+        setTimeout(() => {
+            privacyBanner.classList.add('visible');
+        }, 1500);
+    }
+
+    if (privacyAcceptBtn) {
+        privacyAcceptBtn.addEventListener('click', () => {
+            // Save preference
+            localStorage.setItem('joonify-privacy-accepted', 'true');
+            // Hide banner
+            privacyBanner.classList.remove('visible');
+        });
+    }
 });
 
 // --- Helper: Particle Animation ---
