@@ -938,3 +938,88 @@ h2 {
     font-size: 1.5rem;
     font-weight: 700;
 }
+
+/* --- Contact Section --- */
+.contact-section {
+    padding: 6rem 1.5rem;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+}
+
+.contact-container {
+    width: 100%;
+    max-width: 600px; /* Narrower than other sections for focus */
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.contact-form {
+    background-color: var(--card-bg-color);
+    backdrop-filter: blur(8px);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    border: 1px solid var(--card-border-color);
+    box-shadow: 0 25px 50px -12px var(--card-shadow-color);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    background-color: rgba(10, 25, 31, 0.6);
+    border: 1px solid rgba(134, 239, 172, 0.2);
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-family: var(--font-family-main);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.1);
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.form-status {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    min-height: 1.5rem;
+}
+
+.form-status.success { color: var(--primary-color); }
+.form-status.error { color: #ef4444; }

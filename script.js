@@ -28,6 +28,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     initIcons();
+
+    // --- Contact Form Logic ---
+    const contactForm = document.getElementById('contact-form');
+    const statusDiv = document.getElementById('form-status');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            // 1. Loading State
+            btn.disabled = true;
+            btn.innerHTML = 'Sending...';
+            statusDiv.textContent = '';
+            statusDiv.className = 'form-status';
+
+            // 2. Gather Data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                // 3. Send to Worker
+                const response = await fetch('https://joonify-stats-worker.larsvlasveld11.workers.dev/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    statusDiv.textContent = "Message sent successfully! I'll be in touch soon.";
+                    statusDiv.classList.add('success');
+                    contactForm.reset();
+                } else {
+                    throw new Error(result.error || 'Failed to send');
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.textContent = "Something went wrong. Please try again or email me directly.";
+                statusDiv.classList.add('error');
+            } finally {
+                // 4. Reset Button
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                if(window.lucide) window.lucide.createIcons(); // Re-render icon
+            }
+        });
+    }
 });
 
 // --- Helper: Particle Animation ---

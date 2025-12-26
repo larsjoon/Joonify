@@ -124,6 +124,39 @@
             </div>
         </section>
 
+        <section id="contact" class="contact-section">
+            <div class="contact-container animated-item">
+                <div class="contact-header">
+                    <h2 class="stats-title">Let's Connect</h2>
+                    <p class="stats-subtitle">Ready to start your next project?</p>
+                </div>
+                
+                <form id="contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required placeholder="John Doe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="john@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="4" required placeholder="Tell me about your idea..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="cta-button submit-btn">
+                        <span>Send Message</span>
+                        <i data-lucide="send" class="btn-icon"></i>
+                    </button>
+                    
+                    <div id="form-status" class="form-status"></div>
+                </form>
+            </div>
+        </section>
+
         <footer class="page-footer animated-item">
             <div class="footer-container">
                 <div class="social-links">
