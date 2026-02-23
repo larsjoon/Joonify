@@ -1,61 +1,130 @@
+/**
+ * Joonify Premium Redesign Script (Optimized)
+ * Particles (spatial grid), Scroll Observers, Typing Effect, Mobile Menu, Form.
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. Identify which page we are on ---
-    const isMapPage = document.body.classList.contains('map-page');
-    const particleCanvas = document.getElementById('particle-canvas');
-
-    // --- 2. Run Homepage Logic (Particles & Scroll Animations) ---
-    if (!isMapPage && particleCanvas) {
-        initParticles(particleCanvas);
-        initScrollAnimations();
-    }
-
-    // --- 3. Run Map Page Logic (Globe) ---
-    if (isMapPage) {
-        initGlobe();
-    }
-
-    // --- 4. Shared Logic (WebSocket & Icons) ---
-    connectToStats(isMapPage);
-    
-    // Initialize Lucide icons with retry logic
+    // --- 1. Init Icons ---
     const initIcons = () => {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         } else {
-            // Retry after a short delay if lucide isn't loaded yet
             setTimeout(initIcons, 100);
         }
     };
     initIcons();
 
-    // --- 5. Contact Form Logic ---
+    // --- 2. Scroll Observers (Reveal Animations) ---
+    const revealElements = document.querySelectorAll('.reveal-up');
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // --- 3. Navbar scroll effect ---
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.style.background = 'rgba(10, 25, 31, 0.85)';
+            navbar.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.5)';
+        } else {
+            navbar.style.background = 'rgba(10, 25, 31, 0.6)';
+            navbar.style.boxShadow = 'none';
+        }
+    });
+
+    // --- 4. Scroll Indicator Auto-Hide ---
+    const scrollIndicator = document.getElementById('scroll-indicator');
+    if (scrollIndicator) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                scrollIndicator.style.opacity = '0';
+                scrollIndicator.style.pointerEvents = 'none';
+            } else {
+                scrollIndicator.style.opacity = '0.6';
+                scrollIndicator.style.pointerEvents = 'auto';
+            }
+        }, { passive: true });
+    }
+
+    // --- 5. Typing Effect (from data-text attribute, no flash) ---
+    const subtitleEl = document.querySelector('.type-effect');
+    if (subtitleEl) {
+        const text = subtitleEl.getAttribute('data-text') || '';
+        subtitleEl.innerText = ''; // Starts empty in HTML, no flash
+
+        let i = 0;
+        const typeWriter = () => {
+            if (i < text.length) {
+                subtitleEl.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        };
+        setTimeout(typeWriter, 800);
+    }
+
+    // --- 6. Mobile Menu ---
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (menuBtn && mobileMenu) {
+        // Create overlay element
+        const overlay = document.createElement('div');
+        overlay.classList.add('mobile-overlay');
+        document.body.appendChild(overlay);
+
+        const toggleMenu = () => {
+            const isOpen = mobileMenu.classList.toggle('is-open');
+            overlay.classList.toggle('is-open', isOpen);
+            menuBtn.setAttribute('aria-expanded', isOpen);
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        };
+
+        menuBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // Close menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('is-open')) {
+                    toggleMenu();
+                }
+            });
+        });
+    }
+
+    // --- 7. Contact Form Logic ---
     const contactForm = document.getElementById('contact-form');
     const statusDiv = document.getElementById('form-status');
-    
+
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = contactForm.querySelector('button');
-            const originalText = btn.innerHTML;
-            
-            // Loading State
-            btn.disabled = true;
-            btn.innerHTML = 'Sending...';
-            statusDiv.textContent = '';
-            statusDiv.className = 'form-status';
+            const originalHTML = btn.innerHTML;
 
-            // Gather Data
+            btn.disabled = true;
+            btn.innerHTML = 'Sending... <i data-lucide="loader-2" class="ml-2 animate-spin"></i>';
+            if (window.lucide) window.lucide.createIcons();
+
+            statusDiv.textContent = '';
+            statusDiv.className = 'form-status mt-3 text-center text-sm';
+
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 message: document.getElementById('message').value,
-                // NEW: Grab the token from the hidden input Turnstile creates
-                token: document.querySelector('[name="cf-turnstile-response"]').value
+                token: document.querySelector('[name="cf-turnstile-response"]')?.value || ''
             };
 
             try {
-                // Send to Worker
                 const response = await fetch('https://joonify-stats-worker.larsvlasveld11.workers.dev/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -65,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    statusDiv.textContent = "Message sent successfully! I'll be in touch soon.";
+                    statusDiv.textContent = "Message sent successfully. We'll be in touch.";
                     statusDiv.classList.add('success');
                     contactForm.reset();
                 } else {
@@ -73,340 +142,152 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error(error);
-                statusDiv.textContent = "Something went wrong. Please try again or email me directly.";
+                statusDiv.textContent = "Something went wrong. Please email directly.";
                 statusDiv.classList.add('error');
             } finally {
-                // Reset Button
                 btn.disabled = false;
-                btn.innerHTML = originalText;
-                if(window.lucide) window.lucide.createIcons();
-            }
-        });
-    }
-    // --- Privacy Banner Logic ---
-    const privacyBanner = document.getElementById('privacy-banner');
-    const privacyAcceptBtn = document.getElementById('privacy-accept');
-    
-    // Check if user has already accepted
-    const hasAccepted = localStorage.getItem('joonify-privacy-accepted');
-
-    if (!hasAccepted && privacyBanner) {
-        // Show after a small delay (polite)
-        setTimeout(() => {
-            privacyBanner.classList.add('visible');
-        }, 1500);
-    }
-
-    if (privacyAcceptBtn) {
-        privacyAcceptBtn.addEventListener('click', () => {
-            // Save preference
-            localStorage.setItem('joonify-privacy-accepted', 'true');
-            // Hide banner
-            privacyBanner.classList.remove('visible');
-        });
-    }
-    // --- Joon-AI Chat Logic ---
-    const aiToggle = document.getElementById('ai-toggle');
-    const aiClose = document.getElementById('ai-close');
-    const aiWindow = document.getElementById('ai-window');
-    const aiForm = document.getElementById('ai-input-form');
-    const aiInput = document.getElementById('ai-input');
-    const aiMessages = document.getElementById('ai-messages');
-
-    if (aiToggle && aiWindow) {
-        // Toggle Window
-        aiToggle.addEventListener('click', () => {
-            aiWindow.classList.toggle('open');
-            if (aiWindow.classList.contains('open')) setTimeout(() => aiInput.focus(), 100);
-        });
-        
-        aiClose.addEventListener('click', () => aiWindow.classList.remove('open'));
-
-        // Handle Chat Submission
-        aiForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = aiInput.value.trim();
-            if (!text) return;
-
-            // 1. Add User Message
-            addMessage(text, 'user');
-            aiInput.value = '';
-            
-            // 2. Add Loading State
-            const loadingId = addMessage('Thinking...', 'bot');
-
-            try {
-                // 3. Call Worker AI
-                const response = await fetch('https://joonify-stats-worker.larsvlasveld11.workers.dev/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
-                });
-                
-                const data = await response.json();
-                
-                // 4. Update Loading Message with AI Response
-                const loadingEl = document.querySelector(`[data-id="${loadingId}"]`);
-                if (loadingEl) loadingEl.textContent = data.response || "I encountered an error. Please try again.";
-                
-            } catch (err) {
-                const loadingEl = document.querySelector(`[data-id="${loadingId}"]`);
-                if (loadingEl) loadingEl.textContent = "Error connecting to Joon-AI.";
+                btn.innerHTML = originalHTML;
+                if (window.lucide) window.lucide.createIcons();
             }
         });
     }
 
-    function addMessage(text, sender) {
-        const div = document.createElement('div');
-        div.className = `ai-message ${sender}`;
-        div.textContent = text;
-        const id = Date.now();
-        div.dataset.id = id;
-        aiMessages.appendChild(div);
-        aiMessages.scrollTop = aiMessages.scrollHeight;
-        return id;
+    // --- 8. Particle Background (Spatial Grid Optimized) ---
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas) {
+        initParticles(canvas);
     }
 });
 
-// --- Helper: Particle Animation ---
+// --- Particle Logic (Spatial Grid for O(n) connect) ---
 function initParticles(canvas) {
-    const ctx = canvas.getContext('2d');
-    
-    // Check if we are on the 404 page
-    const is404 = document.body.classList.contains('page-404');
+    const ctx = canvas.getContext('2d', { alpha: false });
 
-    // CONFIGURATION
-    const config = is404 ? {
-        color: 'rgba(239, 68, 68,', // Red for Error
-        speedY_min: 1,              // Falling down speed (min)
-        speedY_max: 3,              // Falling down speed (max)
-        speedX_dev: 0.5,            // Slight horizontal drift
-        connect: false              // Don't draw lines (makes it look like rain/debris)
-    } : {
-        color: 'rgba(173, 216, 230,', // Blue/Cyan for Normal
-        speedY_min: -0.25,
-        speedY_max: 0.25,
-        speedX_dev: 0.25,
-        connect: true               // Draw connection lines
+    const config = {
+        color: 'rgba(134, 239, 172,',
+        speedY_min: -0.15,
+        speedY_max: 0.15,
+        speedX_dev: 0.15,
+        connectDistance: 120
     };
 
     let particles = [];
-    
+    let grid = {};
+    const cellSize = config.connectDistance;
+
     const resizeCanvas = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     };
-    
+
     class Particle {
         constructor(x, y) {
-            this.x = x; 
+            this.x = x;
             this.y = y;
-            this.size = Math.random() * 2 + 0.5;
-            
-            // Logic for 404 vs Normal movement
+            this.size = Math.random() * 1.5 + 0.5;
             this.speedX = Math.random() * config.speedX_dev - (config.speedX_dev / 2);
-            
-            if (is404) {
-                // Falling Down
-                this.speedY = Math.random() * (config.speedY_max - config.speedY_min) + config.speedY_min; 
-            } else {
-                // Floating Randomly
-                this.speedY = Math.random() * 0.5 - 0.25;
-            }
-            
-            this.color = `${config.color} ${Math.random() * 0.5 + 0.2})`;
+            this.speedY = Math.random() * 0.3 - 0.15;
+            this.color = `${config.color} ${Math.random() * 0.4 + 0.1})`;
         }
         update() {
-            this.x += this.speedX; 
+            this.x += this.speedX;
             this.y += this.speedY;
 
-            // Reset logic
-            if (is404) {
-                // If fell off bottom, reset to top
-                if (this.y > canvas.height) {
-                    this.y = 0;
-                    this.x = Math.random() * canvas.width;
-                }
-            } else {
-                // Bounce/Reset for normal page
-                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                    this.x = Math.random() * canvas.width; 
-                    this.y = Math.random() * canvas.height;
-                }
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
             }
         }
         draw() {
-            ctx.fillStyle = this.color; 
+            ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); 
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 
     const init = () => {
         particles = [];
-        const numberOfParticles = Math.floor((canvas.width * canvas.height) / 10000);
-        for (let i = 0; i < numberOfParticles; i++) particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+        const numberOfParticles = Math.floor((canvas.width * canvas.height) / 12000);
+        for (let i = 0; i < numberOfParticles; i++) {
+            particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+    };
+
+    // Build spatial hash grid for O(n) neighbor lookups
+    const buildGrid = () => {
+        grid = {};
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            const cellX = Math.floor(p.x / cellSize);
+            const cellY = Math.floor(p.y / cellSize);
+            const key = `${cellX},${cellY}`;
+            if (!grid[key]) grid[key] = [];
+            grid[key].push(p);
+        }
     };
 
     const connect = () => {
-        // Only run connection logic if enabled
-        if (!config.connect) return; 
+        buildGrid();
+        const checked = new Set();
 
-        for (let a = 0; a < particles.length; a++) {
-            for (let b = a; b < particles.length; b++) {
-                const distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2);
-                if (distance < 100) {
-                    ctx.strokeStyle = `${config.color} ${ (1 - distance / 100) * 0.5 })`;
-                    ctx.lineWidth = 0.5; ctx.beginPath();
-                    ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke();
+        for (let i = 0; i < particles.length; i++) {
+            const a = particles[i];
+            const cellX = Math.floor(a.x / cellSize);
+            const cellY = Math.floor(a.y / cellSize);
+
+            // Check this cell and all 8 neighbors
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    const key = `${cellX + dx},${cellY + dy}`;
+                    const cell = grid[key];
+                    if (!cell) continue;
+
+                    for (let j = 0; j < cell.length; j++) {
+                        const b = cell[j];
+                        if (a === b) continue;
+
+                        // Avoid duplicate pair checks
+                        const pairKey = a.x < b.x ? `${i}-${j}` : `${j}-${i}`;
+                        if (checked.has(pairKey)) continue;
+                        checked.add(pairKey);
+
+                        const ddx = a.x - b.x;
+                        const ddy = a.y - b.y;
+                        const distance = Math.sqrt(ddx * ddx + ddy * ddy);
+
+                        if (distance < config.connectDistance) {
+                            const opacity = (1 - (distance / config.connectDistance)) * 0.2;
+                            ctx.strokeStyle = `${config.color} ${opacity})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    }
                 }
             }
         }
     };
 
     const animate = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0a191f';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         particles.forEach(p => { p.update(); p.draw(); });
         connect();
         requestAnimationFrame(animate);
     };
 
     resizeCanvas(); init(); animate();
-    window.addEventListener('resize', () => { resizeCanvas(); init(); });
-}
 
-// --- Helper: Scroll Animations ---
-function initScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-mounted');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.animated-item').forEach(item => observer.observe(item));
-}
-
-// --- Helper: 3D Globe Logic ---
-let world; 
-function initGlobe() {
-    const elem = document.getElementById('globe-viz');
-    if(!elem) return;
-
-    // Use try-catch in case Globe library is missing
-    try {
-        world = Globe()
-            (elem)
-            .backgroundColor('#000000') // Pure black background
-            .width(window.innerWidth)
-            .height(window.innerHeight)
-            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-            .pointAltitude(0.01)
-            .pointColor('color')
-            .pointRadius('size')
-            .pointLabel('label')
-            .atmosphereColor('#86efac')
-            .atmosphereAltitude(0.15);
-
-        world.controls().autoRotate = true;
-        world.controls().autoRotateSpeed = 0.6;
-    } catch(e) {
-        console.error("Globe init failed:", e);
-    }
-}
-
-function updateGlobeData(countryData) {
-    if (!world || !countryData) return;
-
-    console.log('Updating globe with:', countryData);
-
-    const countryCoords = {
-        "US": { lat: 37.09, lng: -95.71, name: "USA" },
-        "NL": { lat: 52.13, lng: 5.29, name: "Netherlands" },
-        "DE": { lat: 51.16, lng: 10.45, name: "Germany" },
-        "GB": { lat: 55.37, lng: -3.43, name: "UK" },
-        "FR": { lat: 46.22, lng: 2.21, name: "France" },
-        "IN": { lat: 20.59, lng: 78.96, name: "India" },
-        "CN": { lat: 35.86, lng: 104.19, name: "China" },
-        "JP": { lat: 36.20, lng: 138.25, name: "Japan" },
-        "BR": { lat: -14.23, lng: -51.92, name: "Brazil" },
-        "AU": { lat: -25.27, lng: 133.77, name: "Australia" },
-        "CA": { lat: 56.13, lng: -106.34, name: "Canada" },
-        "RU": { lat: 61.52, lng: 105.31, name: "Russia" },
-        // ... add more as needed
-    };
-
-    const points = [];
-    
-    const dataArray = Array.isArray(countryData) ? countryData : Object.entries(countryData).map(([code, count]) => ({ code, count }));
-    
-    dataArray.forEach(item => {
-        const code = item.code || item.country;
-        const count = item.count || item.visitors || 1;
-        const coords = countryCoords[code];
-        
-        if (coords) {
-            points.push({
-                lat: coords.lat,
-                lng: coords.lng,
-                size: Math.max(0.3, Math.log(count + 1) * 0.6),
-                color: '#86efac',
-                label: `${coords.name}: ${count} visitor${count !== 1 ? 's' : ''}`
-            });
-        }
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            resizeCanvas();
+            init();
+        }, 200);
     });
-
-    world.pointsData(points);
-}
-
-// --- WebSocket Logic (Shared) ---
-function connectToStats(isMapPage) {
-    const wsUrl = "wss://joonify-stats-worker.larsvlasveld11.workers.dev";
-    
-    const connect = () => {
-        try {
-            const socket = new WebSocket(wsUrl);
-
-            socket.onopen = () => console.log("Connected to Joonify stats.");
-            
-            socket.onmessage = (event) => {
-                try {
-                    const stats = JSON.parse(event.data);
-                    
-                    if (!isMapPage) {
-                        updateStatOnPage(stats);
-                    }
-                    
-                    if (isMapPage) {
-                        const mapData = stats['map-data'] || stats.mapData;
-                        if (mapData) updateGlobeData(mapData);
-                        
-                        if (stats['visitors-count']) {
-                            const countEl = document.getElementById('map-visitor-count');
-                            if(countEl) countEl.textContent = `${Math.floor(stats['visitors-count']).toLocaleString()} Visitors`;
-                        }
-                    }
-                } catch (error) {
-                    console.error("Data error:", error);
-                }
-            };
-
-            socket.onclose = () => setTimeout(connect, 5000);
-            socket.onerror = (e) => socket.close();
-        } catch (e) { console.error("WS Error:", e); }
-    };
-
-    connect();
-}
-
-function updateStatOnPage(stats) {
-    for (const key in stats) {
-        const element = document.getElementById(key);
-        if (element) {
-            element.textContent = Math.floor(stats[key]).toLocaleString();
-        }
-    }
 }

@@ -1,247 +1,401 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Joonify - The Soul of Intelligent Software</title>
-    <meta name="description" content="Joonify builds human-centered, innovative, and performant AI solutions, web applications, and offers expert IT consulting.">
-    <meta name="keywords" content="AI development, machine learning, web applications, IT consulting, intelligent software, Joonify">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.joonify.dev/">
-    <meta property="og:title" content="Joonify - The Soul of Intelligent Software">
-    <meta property="og:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.joonify.dev/">
-    <meta property="twitter:title" content="Joonify - The Soul of Intelligent Software">
-    <meta property="twitter:description" content="We build innovative AI solutions that are simple, performant, and always human-centered.">
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <title>Joonify | The Soul of Intelligent Software</title>
+
+    <meta name="description"
+        content="Joonify is a Netherlands-based web development agency founded by Lars Vlasveld. We specialize in full-stack web development using React, SvelteKit, and Next.js, serverless APIs on Cloudflare Workers, and high-performance sites scoring 100/100 on Google Lighthouse. KVK 97274674.">
     <meta name="theme-color" content="#0a191f">
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <link rel="canonical" href="https://www.joonify.dev">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Joonify">
+    <meta property="og:title" content="Joonify — Full-Stack Web Development Agency | Netherlands">
+    <meta property="og:description"
+        content="Premium web development with React, SvelteKit, Next.js and Cloudflare Workers. Founded by Lars Vlasveld. 100/100 Lighthouse score on every project.">
+    <meta property="og:url" content="https://www.joonify.dev">
+    <meta property="og:image" content="https://www.joonify.dev/logo.svg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@joonify_nl">
+    <meta name="twitter:title" content="Joonify — Full-Stack Web Development Agency">
+    <meta name="twitter:description"
+        content="Premium web development with React, SvelteKit, Next.js. 100/100 Lighthouse score on every project.">
+    <meta name="twitter:image" content="https://www.joonify.dev/logo.svg">
+
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;600;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS & JS -->
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="script.js" defer></script>
+
+    <!-- GEO: Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Joonify",
+      "alternateName": "Joonify Dev",
+      "url": "https://www.joonify.dev",
+      "logo": "https://www.joonify.dev/logo.svg",
+      "description": "Joonify is a Netherlands-based web development agency specializing in full-stack web development, modern frontend frameworks (React, SvelteKit, Next.js), serverless backend APIs on Cloudflare Workers, and high-performance websites targeting 100/100 Google Lighthouse scores.",
+      "foundingDate": "2024",
+      "founder": {
+        "@type": "Person",
+        "name": "Lars Vlasveld",
+        "jobTitle": "Founder & Lead Developer"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "lars@joonify.dev",
+        "contactType": "customer support",
+        "availableLanguage": ["English", "Dutch"]
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "NL"
+      },
+      "sameAs": [
+        "https://x.com/joonify_nl",
+        "https://linkedin.com/company/J00nify",
+        "https://github.com/larsjoon"
+      ],
+      "knowsAbout": [
+        "Web Development", "React", "SvelteKit", "Next.js",
+        "Cloudflare Workers", "REST APIs", "GraphQL",
+        "PostgreSQL", "Redis", "JavaScript", "TypeScript",
+        "Server-Side Rendering", "Edge Computing"
+      ]
+    }
+    </script>
+
+    <!-- GEO: WebSite Schema (enables sitelinks search in AI) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Joonify",
+      "url": "https://www.joonify.dev",
+      "description": "Premium full-stack web development agency based in the Netherlands.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Joonify"
+      }
+    }
+    </script>
+
+    <!-- GEO: Service Schema (AI engines cite specific services) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Full-Stack Web Development",
+      "provider": {
+        "@type": "Organization",
+        "name": "Joonify",
+        "url": "https://www.joonify.dev"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Worldwide"
+      },
+      "description": "End-to-end web application development including React, SvelteKit, and Next.js frontends, REST/GraphQL APIs, Cloudflare Workers serverless functions, and PostgreSQL/Redis database architecture. All projects target 100/100 Google Lighthouse performance scores.",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Web Development Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Modern Frontend Development",
+              "description": "React, SvelteKit, and Next.js applications with server-side rendering, smooth animations, and mobile-first responsive design."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Backend & API Development",
+              "description": "Scalable REST and GraphQL APIs, serverless edge functions on Cloudflare Workers, and database architecture with PostgreSQL and Redis."
+            }
+          }
+        ]
+      }
+    }
+    </script>
+
+    <!-- GEO: FAQPage Schema (directly citable Q&A for AI engines) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Joonify?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Joonify is a Netherlands-based web development agency founded by Lars Vlasveld. The name comes from the Farsi word 'Joon' (جان), meaning 'soul' or 'life.' Joonify specializes in full-stack web development using modern frameworks like React, SvelteKit, and Next.js, with a focus on performance (100/100 Lighthouse scores) and premium design."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What services does Joonify offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Joonify offers three core services: (1) Full-Stack Web Development — end-to-end modern web applications, (2) Modern Frontend — React, SvelteKit, and Next.js apps with SSR and responsive design, and (3) Backend & APIs — scalable REST/GraphQL APIs, Cloudflare Workers serverless functions, and PostgreSQL/Redis database architecture."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the name 'Joon' mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In Farsi, 'Joon' (جان) translates to 'soul,' 'spirit,' or 'life.' Joonify infuses this philosophy into every project, building human-centered software that feels alive rather than coldly automated."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is Joonify based?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Joonify is based in the Netherlands and registered with the Dutch Chamber of Commerce (KVK) under number 97274674. The company serves clients worldwide."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I contact Joonify?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can contact Joonify by emailing lars@joonify.dev or by filling out the contact form on joonify.dev. Joonify is also active on X (@joonify_nl), LinkedIn (/company/J00nify), and GitHub (/larsjoon)."
+          }
+        }
+      ]
+    }
+    </script>
 </head>
+
 <body>
-    <div id="app-container">
-        <canvas id="particle-canvas"></canvas>
+    <!-- Ambient Particle Background -->
+    <canvas id="particle-canvas" aria-hidden="true" role="presentation"></canvas>
 
-        <!-- Section 1: Brand Reveal & Philosophy -->
-        <section class="hero-section">
-            <div class="hero-content">
-                <div class="main-header">
-                    <div class="header-text">
-                        <!-- Container for the scroll-reveal animation -->
-                        <h1 id="joonify-title-container">
-                            <img src="/logo.svg" alt="Joonify" class="brand-logo">
-                        </h1>
-                        <p class="subtitle animated-item" style="transition-delay: 200ms;">The Soul of Intelligent Software.</p>
-                    </div>
-                </div>
-                <div class="philosophy-section animated-item" style="transition-delay: 300ms;">
-                    <div class="philosophy-box">
-                        <h2>Our Philosophy</h2>
-                        <p>
-                            The name <span class="highlight">Joon</span>, from the Farsi word for 'soul' or 'life', is the core of our identity. We believe technology should be an extension of human potential. At Joonify, we build AI solutions that are innovative, simple, and performant—always with a human-centered essence.
-                        </p>
-                    </div>
-                </div>
-                <div class="cta-section">
-                    <a href="#services" class="cta-button animated-item" style="transition-delay: 400ms;">Explore Our Solutions</a>
-                </div>
-            </div>
-            <div class="scroll-indicator">
-                <i data-lucide="chevron-down" size="24"></i>
-            </div>
-        </section>
-
-        <!-- Section 2: Services -->
-        <section id="services" class="services-section">
-            <div class="services-container">
-                <div class="services-header animated-item">
-                    <h2 class="stats-title">Our Services</h2>
-                    <p class="stats-subtitle">Comprehensive AI and software solutions</p>
-                </div>
-                <div class="services-grid">
-                    <div class="service-card animated-item" style="transition-delay: 100ms;">
-                        <div class="service-icon"><i data-lucide="brain" size="32"></i></div>
-                        <h3 class="service-title">AI Development</h3>
-                        <p class="service-description">Custom AI solutions tailored to your business needs, from machine learning models to intelligent automation systems.</p>
-                    </div>
-                    <div class="service-card animated-item" style="transition-delay: 200ms;">
-                        <div class="service-icon"><i data-lucide="monitor" size="32"></i></div>
-                        <h3 class="service-title">Web Applications</h3>
-                        <p class="service-description">Modern, responsive web applications built with cutting-edge technologies and optimized for performance.</p>
-                    </div>
-                    <div class="service-card animated-item" style="transition-delay: 300ms;">
-                        <div class="service-icon"><i data-lucide="settings" size="32"></i></div>
-                        <h3 class="service-title">IT Consulting</h3>
-                        <p class="service-description">Expert guidance on technology strategy, system architecture, and digital transformation initiatives.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section 3: Stats (Social Proof) -->
-        <section class="stats-section">
-            <div class="stats-container">
-                <div class="stats-header animated-item">
-                    <h2 class="stats-title">Growing Together</h2>
-                    <p class="stats-subtitle">Real-time insights into our community and impact</p>
-                    <a href="/map/" class="map-button">
-                        View Map &rarr;
-                    </a>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card animated-item" style="transition-delay: 100ms;">
-                        <div class="stat-icon"><i data-lucide="users" size="32"></i></div>
-                        <div class="stat-number" id="visitors-count">2,847</div>
-                        <div class="stat-label">Monthly Visitors</div>
-                        <p class="stat-description">Growing community of developers and innovators</p>
-                    </div>
-                    <div class="stat-card animated-item" style="transition-delay: 200ms;">
-                        <div class="stat-icon"><i data-lucide="code" size="32"></i></div>
-                        <div class="stat-number" id="projects-count">34</div>
-                        <div class="stat-label">Active Projects</div>
-                        <p class="stat-description">AI solutions currently in development</p>
-                    </div>
-                    <div class="stat-card animated-item" style="transition-delay: 300ms;">
-                        <div class="stat-icon"><i data-lucide="zap" size="32"></i></div>
-                        <div class="stat-number" id="performance-score">99.2</div>
-                        <div class="stat-label">Performance Score</div>
-                        <p class="stat-description">Average application performance rating</p>
-                    </div>
-                    <div class="stat-card animated-item" style="transition-delay: 400ms;">
-                        <div class="stat-icon"><i data-lucide="globe" size="32"></i></div>
-                        <div class="stat-number" id="countries-count">23</div>
-                        <div class="stat-label">Countries Served</div>
-                        <p class="stat-description">Global reach of our solutions</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="contact-section">
-            <div class="contact-container animated-item">
-                <div class="contact-header">
-                    <h2 class="stats-title">Let's Connect</h2>
-                    <p class="stats-subtitle">Ready to start your next project?</p>
-                </div>
-                
-                <form id="contact-form" class="contact-form">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required placeholder="John Doe">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="john@example.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="4" required placeholder="Tell me about your idea..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="cf-turnstile" data-sitekey="0x4AAAAAACJHIJ5G53GDFAUn" data-theme="dark"></div>
-                    </div>
-                    
-                    <button type="submit" class="cta-button submit-btn">
-                        <span>Send Message</span>
-                        <i data-lucide="send" class="btn-icon"></i>
-                    </button>
-                    
-                    <div id="form-status" class="form-status"></div>
-                </form>
-            </div>
-        </section>
-
-        <div id="ai-widget" class="ai-widget">
-            <div id="ai-window" class="ai-window">
-                <div class="ai-header">
-                    <div class="ai-title">
-                        <i data-lucide="bot"></i>
-                        <span>Joon-AI</span>
-                    </div>
-                    <div class="ai-actions" style="display: flex; gap: 0.5rem;">
-                        <a href="https://ai.joonify.dev" class="ai-icon-btn" aria-label="Open Fullscreen">
-                            <i data-lucide="maximize-2"></i>
-                        </a>
-                        <button id="ai-close" class="ai-icon-btn" aria-label="Close Chat">
-                            <i data-lucide="x"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="ai-messages" class="ai-messages">
-                    <div class="ai-message bot">
-                        Hello! I'm Lars's AI assistant. Ask me anything about his skills or experience.
-                    </div>
-                </div>
-                <form id="ai-input-form" class="ai-input-area">
-                    <input type="text" id="ai-input" placeholder="Ask a question..." autocomplete="off">
-                    <button type="submit"><i data-lucide="send"></i></button>
-                </form>
-            </div>
-        
-            <button id="ai-toggle" class="ai-toggle-btn">
-                <i data-lucide="sparkles"></i>
+    <!-- Header -->
+    <header class="navbar premium-glass">
+        <div class="nav-container">
+            <a href="#home" class="logo-group" aria-label="Joonify Home">
+                <img src="/logo.svg" alt="Joonify Logo" class="logo-img">
+            </a>
+            <nav class="desktop-nav" aria-label="Main navigation">
+                <a href="#expertise" class="nav-link">Expertise</a>
+                <a href="#philosophy" class="nav-link">Philosophy</a>
+                <a href="#showcase" class="nav-link">Showcase</a>
+            </nav>
+            <a href="#connect" class="nav-cta premium-btn-sm" aria-label="Contact us">Let's Talk</a>
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">
+                <i data-lucide="menu"></i>
             </button>
         </div>
+    </header>
 
-        <div id="privacy-banner" class="privacy-banner">
-            <div class="privacy-content">
-                <div class="privacy-icon">
-                    <i data-lucide="shield"></i>
+    <!-- Mobile Menu Drawer -->
+    <div class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+        <a href="#expertise">Expertise</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#showcase">Showcase</a>
+        <a href="#connect">Contact</a>
+    </div>
+
+    <main class="main-content">
+        <!-- 1. Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="hero-content reveal-up">
+                <div class="logo-showcase">
+                    <img src="/logo.svg" alt="Joonify" class="hero-logo glow-effect">
                 </div>
-                <div class="privacy-text">
-                    <p>
-                        <strong>Honest Analytics.</strong> 
-                        We use privacy-first tracking to power our <a href="./map/index.html" class="highlight-link">3D Globe</a>. 
-                        No cookies, no personal data, just aggregate country stats.
+                <h1 class="hero-subtitle type-effect" data-text="The Soul of Intelligent Software."></h1>
+                <div class="hero-actions split-delay">
+                    <a href="#expertise" class="premium-btn primary">Explore Solutions</a>
+                </div>
+            </div>
+            <div class="scroll-down-indicator" id="scroll-indicator">
+                <i data-lucide="mouse"></i>
+                <span>Scroll</span>
+            </div>
+        </section>
+
+        <!-- Section Divider -->
+        <div class="section-divider"></div>
+
+        <!-- 2. Expertise (Bento Grid) -->
+        <section id="expertise" class="expertise-section section-padding">
+            <div class="container">
+                <div class="section-heading text-left reveal-up">
+                    <span class="section-eyebrow">Our Capabilities</span>
+                    <h2 class="section-title">Architecting the Future</h2>
+                </div>
+
+                <div class="bento-grid">
+                    <!-- Full-Stack Web Dev (Hero Card) -->
+                    <div class="bento-item premium-glass-card card-hover hover-glow col-span-2 reveal-up delay-1">
+                        <div class="bento-icon"><i data-lucide="code-2"></i></div>
+                        <h3 class="bento-title">Full-Stack Web Development</h3>
+                        <p class="bento-desc">End-to-end development of modern, responsive web applications — from
+                            pixel-perfect frontends to robust, scalable backend systems. We deliver fast, accessible,
+                            and beautifully crafted digital experiences.</p>
+                    </div>
+
+                    <!-- Modern Frontend -->
+                    <div class="bento-item premium-glass-card card-hover hover-glow reveal-up delay-2">
+                        <div class="bento-icon"><i data-lucide="layout-template"></i></div>
+                        <h3 class="bento-title">Modern Frontend</h3>
+                        <p class="bento-desc">React, SvelteKit, and Next.js applications with server-side rendering,
+                            smooth animations, and mobile-first responsive design.</p>
+                    </div>
+
+                    <!-- Backend & APIs -->
+                    <div class="bento-item premium-glass-card card-hover hover-glow reveal-up delay-3">
+                        <div class="bento-icon"><i data-lucide="server"></i></div>
+                        <h3 class="bento-title">Backend & APIs</h3>
+                        <p class="bento-desc">Scalable REST and GraphQL APIs, serverless edge functions on Cloudflare
+                            Workers, and database architecture with PostgreSQL and Redis.</p>
+                    </div>
+
+                    <!-- Highlight Meta -->
+                    <div class="bento-item premium-glass-card accent-card hover-glow col-span-2 reveal-up delay-4">
+                        <div class="flex-align">
+                            <div>
+                                <h3 class="bento-title text-light">100/100 Lighthouse</h3>
+                                <p class="bento-desc text-light opacity-80">Our standard for performance on every web
+                                    project we deploy.</p>
+                            </div>
+                            <div class="bento-huge-icon"><i data-lucide="zap"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 3. Philosophy Section -->
+        <section id="philosophy" class="philosophy-section section-padding">
+            <div class="container reveal-up">
+                <div class="section-heading text-center">
+                    <span class="section-eyebrow">The Origin</span>
+                    <h2 class="section-title">What is "Joon"?</h2>
+                </div>
+                <div class="philosophy-content premium-glass-card">
+                    <p class="lead-text highlight">
+                        In Farsi, the word <em>"Joon"</em> (جان) translates to "soul," "spirit," or "life."
+                    </p>
+                    <p class="body-text mt-4">
+                        As technology accelerates towards cold automation, we build with deep intention and human
+                        empathy. We infuse <strong>"Joon"</strong> into every line of code, ensuring that our AI systems
+                        and web applications never lose their human-centered core. Our software isn't just intelligent;
+                        it feels alive.
                     </p>
                 </div>
-                <div class="privacy-actions">
-                    <a href="/privacy.html" class="privacy-link">Read Policy</a>
-                    <button id="privacy-accept" class="cta-button small-btn">
-                        Got it
-                    </button>
-                </div>
             </div>
-        </div>
+        </section>
 
-        <footer class="page-footer animated-item">
-            <div class="footer-container">
-                <div class="social-links">
-                    <a href="mailto:lars@joonify.dev" aria-label="Email Joonify">
-                        <i data-lucide="mail"></i>
-                    </a>
-                    
-                    <a href="https://x.com/joonify_nl" target="_blank" rel="noopener noreferrer" aria-label="Joonify on X">
-                        <svg width="1200" height="1227" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
-                            <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="currentColor"/>
-                        </svg>
-                    </a>
-                
-                    <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on LinkedIn">
-                        <i data-lucide="linkedin"></i>
-                    </a>
-        
-                    <a href="https://github.com/larsjoon/Joonify" target="_blank" rel="noopener noreferrer" aria-label="Joonify on GitHub">
-                        <i data-lucide="github"></i>
-                    </a>
+        <div class="section-divider"></div>
+
+        <!-- 4. Showcase Section -->
+        <section id="showcase" class="showcase-section section-padding">
+            <div class="container">
+                <div class="section-heading text-center reveal-up">
+                    <span class="section-eyebrow">Impact</span>
+                    <h2 class="section-title">Featured Work</h2>
                 </div>
-        
-                <div class="legal-footer">
-                    <p class="copyright">&copy; 2026 Joonify. Built with Soul.</p>
-                    <p class="kvk-number">KVK: 97274674</p>
+
+                <div class="showcase-grid" style="grid-template-columns: 1fr;">
+                    <article class="case-card premium-glass-card hover-lift reveal-up delay-1"
+                        style="text-align: center; padding: 4rem 2rem;">
+                        <div class="case-meta" style="justify-content: center; margin-bottom: 1.5rem;">
+                            <span class="case-tag">Coming Soon</span>
+                        </div>
+                        <h3 class="case-title">Projects Portfolio</h3>
+                        <p class="case-desc" style="max-width: 500px; margin: 0 auto;">We are currently finalizing our
+                            case studies. Come back soon to see how we've helped businesses leverage intelligent
+                            software to scale their operations.</p>
+                    </article>
                 </div>
             </div>
-        </footer>
-    </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 5. Connect Section -->
+        <section id="connect" class="connect-section section-padding">
+            <div class="container reveal-up">
+                <div class="section-heading text-center">
+                    <span class="section-eyebrow">Get in Touch</span>
+                    <h2 class="section-title">Let's Build Something Beautiful.</h2>
+                </div>
+                <div class="connect-form-card premium-glass-card" style="max-width: 720px; margin: 0 auto;">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required placeholder="John Doe"
+                                autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="john@example.com"
+                                autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" required placeholder="Tell me about your idea..."
+                                rows="5"></textarea>
+                        </div>
+                        <!-- Cloudflare Turnstile -->
+                        <div class="cf-turnstile mt-4" data-sitekey="0x4AAAAAACJHIJ5G53GDFAUn" data-theme="dark"></div>
+                        <button type="submit" class="premium-btn primary mt-4 w-full">Send Message <i data-lucide="send"
+                                class="ml-2"></i></button>
+                        <div id="form-status" class="form-status mt-3 text-center text-sm"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container" style="text-align: center; padding: 3rem 1.5rem;">
+            <div class="social-icons">
+                <a href="mailto:lars@joonify.dev" aria-label="Email"><i data-lucide="mail"></i></a>
+                <a href="https://x.com/joonify_nl" target="_blank" rel="noopener noreferrer" aria-label="X"><svg
+                        viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                        <path
+                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg></a>
+                <a href="https://linkedin.com/company/J00nify" target="_blank" rel="noopener noreferrer"
+                    aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+                <a href="https://github.com/larsjoon" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i
+                        data-lucide="github"></i></a>
+            </div>
+            <p class="footer-copy">&copy; 2026 Joonify. Built with Soul.</p>
+            <p class="footer-kvk">KVK: 97274674</p>
+        </div>
+    </footer>
 </body>
+
 </html>
